@@ -15,7 +15,7 @@ public class Core extends Game {
     public void create() {
         assets = new Assets();
         manager = new GameManager();
-        manager.prepare(4, 100);
+        manager.prepare(4, 25);
         startScreen = new StartScreen(this);
         playScreen = new PlayScreen(this);
         setScreen(playScreen);

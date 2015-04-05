@@ -13,6 +13,7 @@ public class PlayScreen implements Screen {
 
     Core core;
     SpriteBatch batch;
+    int tileWidth, tileHeight;
 
     public PlayScreen(Core core) {
         this.core = core;
@@ -22,7 +23,12 @@ public class PlayScreen implements Screen {
 
     @Override
     public void show() {
-
+        tileWidth = core.manager.tiles.length * core.assets.tiles.get(1).getWidth() > Gdx.graphics.getWidth()
+                ? core.assets.tiles.get(1).getWidth() * (Gdx.graphics.getWidth() / 640) : core.assets.tiles.get(1)
+                .getWidth();
+        tileHeight = core.manager.tiles.length * core.assets.tiles.get(1).getHeight() > Gdx.graphics.getHeight() ?
+                core.assets.tiles.get(1).getHeight() * (Gdx.graphics.getHeight() / 480) : core.assets.tiles.get(1)
+                .getHeight();
     }
 
     @Override
@@ -37,11 +43,27 @@ public class PlayScreen implements Screen {
             for (int i = 0; i != tiles.length; i++) {
                 Texture tileSprite = core.assets.tiles.get(tiles[i][j]);
                 if (tileSprite != null) {
-                    int width = tileSprite.getHeight() * (Gdx.graphics.getWidth() / 640);
-                    int height = tileSprite.getHeight() * (Gdx.graphics.getHeight() / 480);
-                    int x = i * width + (Gdx.graphics.getWidth() / 2 - (2 * width));
-                    int y = (tiles.length * height) - j * height;
-                    batch.draw(tileSprite, x, y, width, height);
+                    int x = i * tileWidth + (Gdx.graphics.getWidth() / 2 - (2 * tileWidth));
+                    int y = (tiles.length * tileHeight) - j * tileHeight;
+                    if (core.manager.shiftTask != null && core.manager.shiftTask.isScheduled()) {
+                        if (core.manager.shiftTask.number == tiles[i][j]) {
+                            switch (core.manager.shiftTask.direction) {
+                                case 0:
+                                    y += core.manager.shiftTask.getOffset();
+                                    break;
+                                case 1:
+                                    y -= core.manager.shiftTask.getOffset();
+                                    break;
+                                case 2:
+                                    x += core.manager.shiftTask.getOffset();
+                                    break;
+                                case 3:
+                                    x -= core.manager.shiftTask.getOffset();
+                                    break;
+                            }
+                        }
+                    }
+                    batch.draw(tileSprite, x, y, tileWidth, tileHeight);
                 }
             }
         }
@@ -92,33 +114,34 @@ public class PlayScreen implements Screen {
 
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
+            int speed = 8;
             if (velocityX != 0) {
                 if (velocityY != 0) {
                     if (Math.abs(velocityX) >= Math.abs(velocityY)) {
                         if (velocityX < 0) {
-                            core.manager.shiftTile(3);
+                            core.manager.prepareShift(3, tileWidth, (float) tileWidth / speed);
                         } else {
-                            core.manager.shiftTile(2);
+                            core.manager.prepareShift(2, tileWidth, (float) tileWidth / speed);
                         }
                     } else {
                         if (velocityY > 0) {
-                            core.manager.shiftTile(1);
+                            core.manager.prepareShift(1, tileHeight, (float) tileHeight / speed);
                         } else {
-                            core.manager.shiftTile(0);
+                            core.manager.prepareShift(0, tileHeight, (float) tileHeight / speed);
                         }
                     }
                 } else {
                     if (velocityX < 0) {
-                        core.manager.shiftTile(3);
+                        core.manager.prepareShift(3, tileWidth, (float) tileWidth / speed);
                     } else {
-                        core.manager.shiftTile(2);
+                        core.manager.prepareShift(2, tileWidth, (float) tileWidth / speed);
                     }
                 }
             } else if (velocityY != 0) {
                 if (velocityY > 0) {
-                    core.manager.shiftTile(1);
+                    core.manager.prepareShift(1, tileWidth, (float) tileWidth / speed);
                 } else {
-                    core.manager.shiftTile(0);
+                    core.manager.prepareShift(0, tileWidth, (float) tileWidth / speed);
                 }
             }
             return false;

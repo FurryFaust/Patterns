@@ -1,12 +1,14 @@
 package com.furryfaust.patterns;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
 
 import java.util.Random;
 
 public class GameManager {
 
     public int[][] tiles;
+    public shiftTask shiftTask;
 
     public void prepare(int size, int difficulty) {
         tiles = new int[size][size];
@@ -86,40 +88,70 @@ public class GameManager {
         }
     }
 
+    public void prepareShift(int direction, int length, float speed) {
+        int preparedNumber = 0;
+        switch (direction) {
+            case 0:
+                if (getEmptySlot().y != tiles.length - 1) {
+                    preparedNumber = tiles[(int) getEmptySlot().x][(int) getEmptySlot().y + 1];
+                }
+                break;
+            case 1:
+                if (getEmptySlot().y != 0) {
+                    preparedNumber = tiles[(int) getEmptySlot().x][(int) getEmptySlot().y - 1];
+                }
+                break;
+            case 2:
+                if (getEmptySlot().x != 0) {
+                    preparedNumber = tiles[(int) getEmptySlot().x - 1][(int) getEmptySlot().y];
+                }
+                break;
+            case 3:
+                if (getEmptySlot().x != tiles.length - 1) {
+                    preparedNumber = tiles[(int) getEmptySlot().x + 1][(int) getEmptySlot().y];
+                }
+                break;
+        }
+        if (preparedNumber != 0) {
+            shiftTask = new shiftTask(preparedNumber, direction, length, speed);
+            Timer.schedule(shiftTask, 0F, 0.025F);
+        }
+    }
 
-    public boolean shiftTile(int direction) {
+
+    public int shiftTile(int direction) {
         Vector2 emptySlot = getEmptySlot();
         switch (direction) {
             case 0:
                 if (emptySlot.y != tiles.length - 1) {
                     tiles[(int) emptySlot.x][(int) emptySlot.y] = tiles[(int) emptySlot.x][(int) emptySlot.y + 1];
                     tiles[(int) emptySlot.x][(int) emptySlot.y + 1] = 0;
-                    return true;
+                    return tiles[(int) emptySlot.x][(int) emptySlot.y];
                 }
                 break;
             case 1:
                 if (emptySlot.y != 0) {
                     tiles[(int) emptySlot.x][(int) emptySlot.y] = tiles[(int) emptySlot.x][(int) emptySlot.y - 1];
                     tiles[(int) emptySlot.x][(int) emptySlot.y - 1] = 0;
-                    return true;
+                    return tiles[(int) emptySlot.x][(int) emptySlot.y];
                 }
                 break;
             case 2:
                 if (emptySlot.x != 0) {
                     tiles[(int) emptySlot.x][(int) emptySlot.y] = tiles[(int) emptySlot.x - 1][(int) emptySlot.y];
                     tiles[(int) emptySlot.x - 1][(int) emptySlot.y] = 0;
-                    return true;
+                    return tiles[(int) emptySlot.x][(int) emptySlot.y];
                 }
                 break;
             case 3:
                 if (emptySlot.x != tiles.length - 1) {
                     tiles[(int) emptySlot.x][(int) emptySlot.y] = tiles[(int) emptySlot.x + 1][(int) emptySlot.y];
                     tiles[(int) emptySlot.x + 1][(int) emptySlot.y] = 0;
-                    return true;
+                    return tiles[(int) emptySlot.x][(int) emptySlot.y];
                 }
                 break;
         }
-        return false;
+        return 0;
     }
 
     public Vector2 getEmptySlot() {
@@ -131,6 +163,39 @@ public class GameManager {
             }
         }
         return null;
+    }
+
+    public class shiftTask extends Timer.Task {
+
+        public int number, direction, length;
+        float completion, speed;
+
+        public shiftTask(int number, int direction, int length, float speed) {
+            this.number = number;
+            this.direction = direction;
+            this.length = length;
+            this.speed = speed;
+            completion = 0.0F;
+        }
+
+        @Override
+        public void run() {
+            if (!isComplete()) {
+                completion += (speed / (float) length);
+            } else {
+                shiftTile(direction);
+                cancel();
+            }
+        }
+
+        public boolean isComplete() {
+            return completion >= 1.0F;
+        }
+
+        public int getOffset() {
+            return (int) (completion * (float) length);
+        }
+
     }
 
 }
