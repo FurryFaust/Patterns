@@ -13,7 +13,8 @@ public class PlayScreen implements Screen {
 
     Core core;
     SpriteBatch batch;
-    int tileWidth, tileHeight;
+    int tileWidth, tileHeight, boardWidth, boardHeight,
+            boardX, boardY;
 
     public PlayScreen(Core core) {
         this.core = core;
@@ -23,19 +24,20 @@ public class PlayScreen implements Screen {
 
     @Override
     public void show() {
-        tileWidth = core.manager.tiles.length * core.assets.tiles.get(1).getWidth() > Gdx.graphics.getWidth()
-                ? core.assets.tiles.get(1).getWidth() * (Gdx.graphics.getWidth() / 640) : core.assets.tiles.get(1)
-                .getWidth();
-        tileHeight = core.manager.tiles.length * core.assets.tiles.get(1).getHeight() > Gdx.graphics.getHeight() ?
-                core.assets.tiles.get(1).getHeight() * (Gdx.graphics.getHeight() / 480) : core.assets.tiles.get(1)
-                .getHeight();
+        double multiplier = 1.0;
+        tileWidth = (int) ((double) core.assets.tiles.get(1).getWidth() * multiplier * ((double) Gdx.graphics.getWidth() / 640D));
+        tileHeight = (int) ((double) core.assets.tiles.get(1).getHeight() * multiplier * ((double) Gdx.graphics.getHeight() / 480D));
+        boardWidth = (int) ((double) core.assets.board.getWidth() * multiplier * ((double) Gdx.graphics.getWidth() / 640D));
+        boardHeight = (int) ((double) core.assets.board.getWidth() * multiplier * ((double) Gdx.graphics.getHeight() / 480D));
+        boardX = Gdx.graphics.getWidth() / 2 - (2 * tileWidth) - (boardWidth / 2 - (2 * tileWidth));
+        boardY = Gdx.graphics.getHeight() / 2 - (2 * tileHeight) - (boardHeight / 2 - (2 * tileHeight));
     }
 
     @Override
     public void render(float delta) {
         int[][] tiles = core.manager.tiles;
 
-        Gdx.graphics.getGL20().glClearColor(1, 1, 1, 1);
+        Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
@@ -44,7 +46,8 @@ public class PlayScreen implements Screen {
                 Texture tileSprite = core.assets.tiles.get(tiles[i][j]);
                 if (tileSprite != null) {
                     int x = i * tileWidth + (Gdx.graphics.getWidth() / 2 - (2 * tileWidth));
-                    int y = (tiles.length * tileHeight) - j * tileHeight;
+                    int y = ((tiles.length - 1) * tileHeight) - j * tileHeight + ((Gdx.graphics.getHeight() / 2)
+                            - (2 * tileHeight));
                     if (core.manager.shiftTask != null && core.manager.shiftTask.isScheduled()) {
                         if (core.manager.shiftTask.number == tiles[i][j]) {
                             switch (core.manager.shiftTask.direction) {
@@ -67,6 +70,7 @@ public class PlayScreen implements Screen {
                 }
             }
         }
+        batch.draw(core.assets.board, boardX, boardY, boardWidth, boardHeight);
         batch.end();
     }
 

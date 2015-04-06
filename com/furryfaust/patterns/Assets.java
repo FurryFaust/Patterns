@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class Assets {
 
     public ArrayList<Texture> tiles = new ArrayList<Texture>();
+    public Texture board = new Texture("board.png");
 
     public Assets() {
         tiles.add(null);

@@ -82,9 +82,11 @@ public class GameManager {
     }
 
     public void scramble(int chaos) {
-        Random random = new Random();
-        for (int i = 0; i != chaos; i++) {
-            shiftTile(random.nextInt(4));
+        if (chaos != 0) {
+            Random random = new Random();
+            for (int i = 0; i != chaos; i++) {
+                shiftTile(random.nextInt(4));
+            }
         }
     }
 
