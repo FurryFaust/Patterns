@@ -24,11 +24,11 @@ public class PlayScreen implements Screen {
 
     @Override
     public void show() {
-        double multiplier = 1.0;
-        tileWidth = (int) ((double) core.assets.tiles.get(1).getWidth() * multiplier * ((double) Gdx.graphics.getWidth() / 640D));
-        tileHeight = (int) ((double) core.assets.tiles.get(1).getHeight() * multiplier * ((double) Gdx.graphics.getHeight() / 480D));
-        boardWidth = (int) ((double) core.assets.board.getWidth() * multiplier * ((double) Gdx.graphics.getWidth() / 640D));
-        boardHeight = (int) ((double) core.assets.board.getWidth() * multiplier * ((double) Gdx.graphics.getHeight() / 480D));
+        double multiplier = (double) Gdx.graphics.getWidth() / 340D;
+        tileWidth = (int) ((double) core.assets.tiles.get(1).getWidth() * multiplier);
+        tileHeight = (int) ((double) core.assets.tiles.get(1).getHeight() * multiplier);
+        boardWidth = (int) ((double) core.assets.board.getWidth() * multiplier);
+        boardHeight = (int) ((double) core.assets.board.getWidth() * multiplier);
         boardX = Gdx.graphics.getWidth() / 2 - (2 * tileWidth) - (boardWidth / 2 - (2 * tileWidth));
         boardY = Gdx.graphics.getHeight() / 2 - (2 * tileHeight) - (boardHeight / 2 - (2 * tileHeight));
     }
@@ -41,6 +41,7 @@ public class PlayScreen implements Screen {
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
+        batch.draw(core.assets.board, boardX, boardY, boardWidth, boardHeight);
         for (int j = 0; j != tiles.length; j++) {
             for (int i = 0; i != tiles.length; i++) {
                 Texture tileSprite = core.assets.tiles.get(tiles[i][j]);
@@ -70,7 +71,6 @@ public class PlayScreen implements Screen {
                 }
             }
         }
-        batch.draw(core.assets.board, boardX, boardY, boardWidth, boardHeight);
         batch.end();
     }
 
