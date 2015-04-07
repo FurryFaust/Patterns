@@ -174,13 +174,11 @@ public class GameManager {
     public boolean checkBoard() {
         for (int i = 0; i != tiles.length; i++) {
             for (int j = 0; j != tiles.length; j++) {
-                System.out.println(winningTiles[i][j] + " " + tiles[i][j]);
                 if (winningTiles[i][j] != tiles[i][j]) {
                     return false;
                 }
             }
         }
-
         return true;
     }
 
