@@ -8,6 +8,8 @@ public class Assets {
 
     public ArrayList<Texture> tiles = new ArrayList<Texture>();
     public Texture board = new Texture("board.png");
+    public Texture trophy = new Texture("trophy.png");
+    public Texture continueButton = new Texture("continue.png");
 
     public Assets() {
         tiles.add(null);

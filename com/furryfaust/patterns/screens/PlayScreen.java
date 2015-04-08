@@ -14,7 +14,9 @@ public class PlayScreen implements Screen {
     Core core;
     SpriteBatch batch;
     int tileWidth, tileHeight, boardWidth, boardHeight,
-            boardX, boardY;
+            boardX, boardY, trophyWidth, trophyHeight,
+            trophyX, trophyY, continueWidth, continueHeight,
+            continueX, continueY;
 
     public PlayScreen(Core core) {
         this.core = core;
@@ -31,6 +33,14 @@ public class PlayScreen implements Screen {
         boardHeight = (int) ((double) core.assets.board.getWidth() * multiplier);
         boardX = Gdx.graphics.getWidth() / 2 - (2 * tileWidth) - (boardWidth / 2 - (2 * tileWidth));
         boardY = Gdx.graphics.getHeight() / 2 - (2 * tileHeight) - (boardHeight / 2 - (2 * tileHeight));
+        trophyWidth = (int) ((double) core.assets.trophy.getWidth() * multiplier * 5D);
+        trophyHeight = (int) ((double) core.assets.trophy.getHeight() * multiplier * 5D);
+        trophyY = Gdx.graphics.getHeight() / 2 - (trophyHeight / 2);
+        trophyX = Gdx.graphics.getWidth() / 2 - (trophyWidth / 2);
+        continueWidth = (int) ((double) core.assets.continueButton.getWidth() * multiplier * 2D);
+        continueHeight = (int) ((double) core.assets.continueButton.getHeight() * multiplier * 2D);
+        continueX = Gdx.graphics.getWidth() / 2 - (continueWidth / 2);
+        continueY = trophyY - continueHeight;
     }
 
     @Override
@@ -39,7 +49,6 @@ public class PlayScreen implements Screen {
 
         Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.begin();
         batch.draw(core.assets.board, boardX, boardY, boardWidth, boardHeight);
         for (int j = 0; j != tiles.length; j++) {
@@ -70,6 +79,10 @@ public class PlayScreen implements Screen {
                     batch.draw(tileSprite, x, y, tileWidth, tileHeight);
                 }
             }
+        }
+        if (!core.manager.checkBoard()) {
+            batch.draw(core.assets.trophy, trophyX, trophyY, trophyWidth, trophyHeight);
+            batch.draw(core.assets.continueButton, continueX, continueY, continueWidth, continueHeight);
         }
         batch.end();
     }

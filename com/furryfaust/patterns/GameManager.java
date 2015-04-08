@@ -94,7 +94,7 @@ public class GameManager {
     }
 
     public void prepareShift(int direction, int length, float speed) {
-        if (shiftTask == null || !shiftTask.isScheduled()) {
+        if (!checkBoard() && (shiftTask == null || !shiftTask.isScheduled())) {
             int preparedNumber = 0;
             switch (direction) {
                 case 0:
