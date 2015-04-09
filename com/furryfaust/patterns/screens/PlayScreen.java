@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
@@ -13,6 +14,7 @@ public class PlayScreen implements Screen {
 
     Core core;
     SpriteBatch batch;
+    BitmapFont font;
     int tileWidth, tileHeight, boardWidth, boardHeight,
             boardX, boardY, trophyWidth, trophyHeight,
             trophyX, trophyY, continueWidth, continueHeight,
@@ -21,11 +23,11 @@ public class PlayScreen implements Screen {
     public PlayScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
-        Gdx.input.setInputProcessor(new GestureDetector(new SwipeListener()));
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
         double multiplier = (double) Gdx.graphics.getWidth() / 340D;
         tileWidth = (int) ((double) core.assets.tiles.get(1).getWidth() * multiplier);
         tileHeight = (int) ((double) core.assets.tiles.get(1).getHeight() * multiplier);
@@ -80,7 +82,7 @@ public class PlayScreen implements Screen {
                 }
             }
         }
-        if (!core.manager.checkBoard()) {
+        if (core.manager.checkBoard()) {
             batch.draw(core.assets.trophy, trophyX, trophyY, trophyWidth, trophyHeight);
             batch.draw(core.assets.continueButton, continueX, continueY, continueWidth, continueHeight);
         }
@@ -104,7 +106,6 @@ public class PlayScreen implements Screen {
 
     @Override
     public void hide() {
-
     }
 
     @Override
@@ -112,10 +113,17 @@ public class PlayScreen implements Screen {
 
     }
 
-    class SwipeListener implements GestureDetector.GestureListener {
+    class InputHandler implements GestureDetector.GestureListener {
 
         @Override
         public boolean touchDown(float x, float y, int pointer, int button) {
+            y = Gdx.graphics.getHeight() - y;
+            if (core.manager.checkBoard() &&
+                    x > continueX && x < continueX + continueWidth
+                    && y > continueY && y < continueY + continueHeight) {
+                core.setScreen(core.winScreen);
+                return true;
+            }
             return false;
         }
 

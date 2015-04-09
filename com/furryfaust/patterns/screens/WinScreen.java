@@ -3,52 +3,33 @@ package com.furryfaust.patterns.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.furryfaust.patterns.Core;
 
-public class StartScreen implements Screen {
+import java.util.Date;
+
+public class WinScreen implements Screen {
 
     Core core;
-    SpriteBatch batch;
-    int playX, playY, playWidth, playHeight,
-            creditsX, creditsY, creditsWidth, creditsHeight,
-            logX, logY, logWidth, logHeight;
 
-    public StartScreen(Core core) {
+    public WinScreen(Core core) {
         this.core = core;
-        batch = new SpriteBatch();
     }
 
     @Override
     public void show() {
-        double multiplier = (double) Gdx.graphics.getWidth() / 340D;
-        playWidth = (int) ((double) core.assets.playButton.getWidth() * multiplier * 5D);
-        playHeight = (int) ((double) core.assets.playButton.getHeight() * multiplier * 5D);
-        playX = Gdx.graphics.getWidth() / 2 - (playWidth / 2);
-        playY = Gdx.graphics.getHeight() / 2 + (playHeight / 2);
-        logWidth = (int) ((double) core.assets.logButton.getWidth() * multiplier * 5D);
-        logHeight = (int) ((double) core.assets.logButton.getHeight() * multiplier * 5D);
-        logX = Gdx.graphics.getWidth() / 2 - (logWidth / 2);
-        logY = (playY - playHeight);
-        creditsWidth = (int) ((double) core.assets.creditsButton.getWidth() * multiplier * 5D);
-        creditsHeight = (int) ((double) core.assets.creditsButton.getHeight() * multiplier * 5D);
-        creditsX = Gdx.graphics.getWidth() / 2 - (creditsWidth / 2);
-        creditsY = (logY - logHeight) - (int) ((double) logHeight * .4D);
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
+        core.files.data.log(new Date(TimeUtils.millis()).toString(), core.manager.movesPerformed + "|"
+                + core.manager.timePlayed);
+        core.files.saveData();
     }
 
     @Override
     public void render(float delta) {
         Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        batch.begin();
-        batch.draw(core.assets.playButton, playX, playY, playWidth, playHeight);
-        batch.draw(core.assets.creditsButton, creditsX, creditsY, creditsWidth, creditsHeight);
-        batch.draw(core.assets.logButton, logX, logY, logWidth, logHeight);
-        batch.end();
     }
 
     @Override
@@ -68,6 +49,7 @@ public class StartScreen implements Screen {
 
     @Override
     public void hide() {
+
     }
 
     @Override
@@ -79,7 +61,6 @@ public class StartScreen implements Screen {
 
         @Override
         public boolean touchDown(float x, float y, int pointer, int button) {
-            y = Gdx.graphics.getHeight() - y;
             return false;
         }
 

@@ -5,11 +5,11 @@ import com.badlogic.gdx.utils.Timer;
 
 import java.util.Random;
 
-public class GameManager {
+public class Manager {
 
-    public int[][] tiles;
-    public int[][] winningTiles;
+    public int[][] tiles, winningTiles;
     public Tasks.shiftTask shiftTask;
+    public int movesPerformed, timePlayed;
 
     public void prepare(int size, int difficulty) {
         tiles = new int[size][size];
@@ -17,7 +17,10 @@ public class GameManager {
         winningTiles = new int[size][size];
         populate(winningTiles);
         scramble(difficulty);
-        printTiles();
+        movesPerformed = 0;
+        timePlayed = 0;
+
+        Timer.schedule(new Tasks.countTask(this), 1F, 1F);
     }
 
                 /*
@@ -75,20 +78,11 @@ public class GameManager {
         }
     }
 
-    public void printTiles() {
-        for (int i = 0; i != tiles.length; i++) {
-            for (int j = 0; j != tiles.length; j++) {
-                System.out.print(tiles[j][i] + (tiles[j][i] >= 10 ? " " : "  "));
-            }
-            System.out.println("");
-        }
-    }
-
     public void scramble(int chaos) {
         if (chaos != 0) {
             Random random = new Random();
             for (int i = 0; i != chaos; i++) {
-                shiftTile(random.nextInt(4));
+                shiftTile(random.nextInt(4), true);
             }
         }
     }
@@ -126,13 +120,16 @@ public class GameManager {
     }
 
 
-    public void shiftTile(int direction) {
+    public void shiftTile(int direction, boolean robot) {
         Vector2 emptySlot = getEmptySlot();
         switch (direction) {
             case 0:
                 if (emptySlot.y != tiles.length - 1) {
                     tiles[(int) emptySlot.x][(int) emptySlot.y] = tiles[(int) emptySlot.x][(int) emptySlot.y + 1];
                     tiles[(int) emptySlot.x][(int) emptySlot.y + 1] = 0;
+                    if (!robot) {
+                        movesPerformed++;
+                    }
                     checkBoard();
                 }
                 break;
@@ -140,6 +137,9 @@ public class GameManager {
                 if (emptySlot.y != 0) {
                     tiles[(int) emptySlot.x][(int) emptySlot.y] = tiles[(int) emptySlot.x][(int) emptySlot.y - 1];
                     tiles[(int) emptySlot.x][(int) emptySlot.y - 1] = 0;
+                    if (!robot) {
+                        movesPerformed++;
+                    }
                     checkBoard();
                 }
                 break;
@@ -147,6 +147,9 @@ public class GameManager {
                 if (emptySlot.x != 0) {
                     tiles[(int) emptySlot.x][(int) emptySlot.y] = tiles[(int) emptySlot.x - 1][(int) emptySlot.y];
                     tiles[(int) emptySlot.x - 1][(int) emptySlot.y] = 0;
+                    if (!robot) {
+                        movesPerformed++;
+                    }
                     checkBoard();
                 }
                 break;
@@ -154,6 +157,9 @@ public class GameManager {
                 if (emptySlot.x != tiles.length - 1) {
                     tiles[(int) emptySlot.x][(int) emptySlot.y] = tiles[(int) emptySlot.x + 1][(int) emptySlot.y];
                     tiles[(int) emptySlot.x + 1][(int) emptySlot.y] = 0;
+                    if (!robot) {
+                        movesPerformed++;
+                    }
                     checkBoard();
                 }
                 break;

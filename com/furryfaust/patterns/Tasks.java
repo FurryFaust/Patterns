@@ -4,13 +4,31 @@ import com.badlogic.gdx.utils.Timer;
 
 public class Tasks {
 
+    public static class countTask extends Timer.Task {
+
+        Manager manager;
+
+        public countTask(Manager manager) {
+            this.manager = manager;
+        }
+
+        @Override
+        public void run() {
+            if (!manager.checkBoard()) {
+                manager.timePlayed++;
+            } else {
+                cancel();
+            }
+        }
+    }
+
     public static class shiftTask extends Timer.Task {
 
-        public GameManager manager;
+        public Manager manager;
         public int number, direction, length;
         float completion, speed;
 
-        public shiftTask(GameManager manager, int number, int direction, int length, float speed) {
+        public shiftTask(Manager manager, int number, int direction, int length, float speed) {
             this.manager = manager;
             this.number = number;
             this.direction = direction;
@@ -24,7 +42,9 @@ public class Tasks {
             if (!isComplete()) {
                 completion += (speed / (float) length);
             } else {
-                manager.shiftTile(direction);
+                if (!manager.checkBoard()) {
+                    manager.shiftTile(direction, false);
+                }
                 cancel();
             }
         }
