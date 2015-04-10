@@ -2,7 +2,11 @@ package com.furryfaust.patterns.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -13,9 +17,18 @@ import java.util.Date;
 public class WinScreen implements Screen {
 
     Core core;
+    BitmapFont font;
+    BitmapFontCache cache;
+    SpriteBatch batch;
 
     public WinScreen(Core core) {
         this.core = core;
+        font = new BitmapFont(Gdx.files.internal("font.fnt"));
+        font.setScale(2);
+        cache = new BitmapFontCache(font);
+        cache.addText("Congratulations!", Gdx.graphics.getWidth() / 2 - font.getBounds("Congratulations!").width / 2,
+                Gdx.graphics.getHeight());
+        batch = new SpriteBatch();
     }
 
     @Override
@@ -30,6 +43,10 @@ public class WinScreen implements Screen {
     public void render(float delta) {
         Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.begin();
+        cache.draw(batch);
+        batch.end();
     }
 
     @Override

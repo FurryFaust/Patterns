@@ -1,8 +1,15 @@
 package com.furryfaust.patterns.screens;
 
 import com.badlogic.gdx.Screen;
+import com.furryfaust.patterns.Core;
 
 public class CreditScreen implements Screen {
+
+    Core core;
+
+    public CreditScreen(Core core) {
+        this.core = core;
+    }
 
     @Override
     public void show() {

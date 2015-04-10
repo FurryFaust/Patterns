@@ -188,4 +188,9 @@ public class Manager {
         return true;
     }
 
+    public String getTimeElapsed() {
+        return String.valueOf(timePlayed / 60) + ":" + ((timePlayed % 60) < 10
+                ? "0" + String.valueOf(timePlayed % 60) : String.valueOf(timePlayed % 60));
+    }
+
 }

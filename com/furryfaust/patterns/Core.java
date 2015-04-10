@@ -20,7 +20,7 @@ public class Core extends Game {
         manager = new Manager();
         files = new Files();
         startScreen = new StartScreen(this);
-        manager.prepare(4, 30);
+        manager.prepare(4, 100);
         playScreen = new PlayScreen(this);
         winScreen = new WinScreen(this);
         setScreen(playScreen);

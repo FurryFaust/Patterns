@@ -18,23 +18,26 @@ public class PlayScreen implements Screen {
     int tileWidth, tileHeight, boardWidth, boardHeight,
             boardX, boardY, trophyWidth, trophyHeight,
             trophyX, trophyY, continueWidth, continueHeight,
-            continueX, continueY;
+            continueX, continueY, scoreX, scoreY, scoreWidth,
+            scoreHeight, timeShownX, timeShownY, movedShownX,
+            movedShownY;
 
     public PlayScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
+        font = new BitmapFont(Gdx.files.internal("font.fnt"));
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
-        double multiplier = (double) Gdx.graphics.getWidth() / 340D;
+        double multiplier = (double) Gdx.graphics.getWidth() / 330D;
         tileWidth = (int) ((double) core.assets.tiles.get(1).getWidth() * multiplier);
         tileHeight = (int) ((double) core.assets.tiles.get(1).getHeight() * multiplier);
         boardWidth = (int) ((double) core.assets.board.getWidth() * multiplier);
         boardHeight = (int) ((double) core.assets.board.getWidth() * multiplier);
         boardX = Gdx.graphics.getWidth() / 2 - (2 * tileWidth) - (boardWidth / 2 - (2 * tileWidth));
-        boardY = Gdx.graphics.getHeight() / 2 - (2 * tileHeight) - (boardHeight / 2 - (2 * tileHeight));
+        boardY = Gdx.graphics.getHeight() / 2 - (int) (2.5D * (double) tileHeight) - (boardHeight / 2 - (2 * tileHeight));
         trophyWidth = (int) ((double) core.assets.trophy.getWidth() * multiplier * 5D);
         trophyHeight = (int) ((double) core.assets.trophy.getHeight() * multiplier * 5D);
         trophyY = Gdx.graphics.getHeight() / 2 - (trophyHeight / 2);
@@ -43,6 +46,14 @@ public class PlayScreen implements Screen {
         continueHeight = (int) ((double) core.assets.continueButton.getHeight() * multiplier * 2D);
         continueX = Gdx.graphics.getWidth() / 2 - (continueWidth / 2);
         continueY = trophyY - continueHeight;
+        scoreWidth = (int) ((double) core.assets.score.getWidth() * multiplier * 1.25D);
+        scoreHeight = (int) ((double) core.assets.score.getHeight() * multiplier * 1.25D);
+        scoreX = Gdx.graphics.getWidth() / 2 - (scoreWidth / 2);
+        scoreY = boardY + boardHeight + (int) ((double) tileHeight * .25D);
+        timeShownX = scoreX + (int) ((double) scoreWidth * (84D / 206D));
+        timeShownY = scoreY + scoreHeight - (int) ((double) scoreHeight * (36D / 78D));
+        movedShownX = scoreX + (int) ((double) scoreWidth * (156D / 206D));
+        movedShownY = timeShownY;
     }
 
     @Override
@@ -58,7 +69,7 @@ public class PlayScreen implements Screen {
                 Texture tileSprite = core.assets.tiles.get(tiles[i][j]);
                 if (tileSprite != null) {
                     int x = i * tileWidth + (Gdx.graphics.getWidth() / 2 - (2 * tileWidth));
-                    int y = ((tiles.length - 1) * tileHeight) - j * tileHeight + ((Gdx.graphics.getHeight() / 2)
+                    int y = ((int) (((double) tiles.length - 1.5D) * (double) tileHeight)) - j * tileHeight + ((Gdx.graphics.getHeight() / 2)
                             - (2 * tileHeight));
                     if (core.manager.shiftTask != null && core.manager.shiftTask.isScheduled()) {
                         if (core.manager.shiftTask.number == tiles[i][j]) {
@@ -86,6 +97,9 @@ public class PlayScreen implements Screen {
             batch.draw(core.assets.trophy, trophyX, trophyY, trophyWidth, trophyHeight);
             batch.draw(core.assets.continueButton, continueX, continueY, continueWidth, continueHeight);
         }
+        batch.draw(core.assets.score, scoreX, scoreY, scoreWidth, scoreHeight);
+        font.draw(batch, core.manager.getTimeElapsed(), timeShownX, timeShownY);
+        font.draw(batch, String.valueOf(core.manager.movesPerformed), movedShownX, movedShownY);
         batch.end();
     }
 

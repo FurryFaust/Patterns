@@ -13,6 +13,8 @@ public class Assets {
     public Texture playButton = new Texture("play.png");
     public Texture creditsButton = new Texture("credits.png");
     public Texture logButton = new Texture("log.png");
+    public Texture logo = new Texture("logo.png");
+    public Texture score = new Texture("score.png");
 
     public Assets() {
         tiles.add(null);
