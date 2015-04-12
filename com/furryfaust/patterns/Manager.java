@@ -9,7 +9,13 @@ public class Manager {
 
     public int[][] tiles, winningTiles;
     public Tasks.shiftTask shiftTask;
+    public Tasks.countTask countTask;
     public int movesPerformed, timePlayed;
+    public int difficulty;
+
+    public Manager() {
+        countTask = new Tasks.countTask(this);
+    }
 
     public void prepare(int size, int difficulty) {
         tiles = new int[size][size];
@@ -19,8 +25,9 @@ public class Manager {
         scramble(difficulty);
         movesPerformed = 0;
         timePlayed = 0;
-
-        Timer.schedule(new Tasks.countTask(this), 1F, 1F);
+        this.difficulty = difficulty;
+        countTask.cancel();
+        Timer.schedule(countTask, 1F, 1F);
     }
 
                 /*

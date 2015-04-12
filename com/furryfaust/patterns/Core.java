@@ -1,9 +1,8 @@
 package com.furryfaust.patterns;
 
 import com.badlogic.gdx.Game;
-import com.furryfaust.patterns.screens.PlayScreen;
-import com.furryfaust.patterns.screens.StartScreen;
-import com.furryfaust.patterns.screens.WinScreen;
+import com.badlogic.gdx.Gdx;
+import com.furryfaust.patterns.screens.*;
 
 public class Core extends Game {
 
@@ -12,7 +11,10 @@ public class Core extends Game {
     public Files files;
     public StartScreen startScreen;
     public PlayScreen playScreen;
-    public WinScreen winScreen;
+    public LevelScreen levelScreen;
+    public LogScreen logScreen;
+    public CreditScreen creditScreen;
+    public HelpScreen helpScreen;
 
     @Override
     public void create() {
@@ -20,10 +22,17 @@ public class Core extends Game {
         manager = new Manager();
         files = new Files();
         startScreen = new StartScreen(this);
-        manager.prepare(4, 100);
         playScreen = new PlayScreen(this);
-        winScreen = new WinScreen(this);
-        setScreen(playScreen);
+        levelScreen = new LevelScreen(this);
+        logScreen = new LogScreen(this);
+        creditScreen = new CreditScreen(this);
+        helpScreen = new HelpScreen(this);
+        if (Gdx.files.local("seenhelp").exists()) {
+            setScreen(startScreen);
+        } else {
+            setScreen(helpScreen);
+            Gdx.files.local("seenhelp").write(false);
+        }
     }
 
 }

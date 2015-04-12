@@ -8,15 +8,16 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.furryfaust.patterns.Core;
 
-public class CreditScreen implements Screen {
+public class LevelScreen implements Screen {
 
     Core core;
     SpriteBatch batch;
-    int creditsX, creditsY, creditsWidth, creditsHeight,
-            buttonWidth, buttonHeight, buttonX,
-            buttonY;
+    int buttonWidth, buttonHeight, buttonX,
+            buttonY, easyX, easyY, easyWidth,
+            easyHeight, hardX, hardY, hardWidth,
+            hardHeight;
 
-    public CreditScreen(Core core) {
+    public LevelScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
     }
@@ -28,10 +29,14 @@ public class CreditScreen implements Screen {
         buttonHeight = (int) ((double) core.assets.button.getHeight() * multiplier * 1.5D);
         buttonX = (int) ((double) buttonWidth / 4D);
         buttonY = Gdx.graphics.getHeight() - (int) ((double) buttonWidth * 1.25D);
-        creditsWidth = (int) ((double) core.assets.actualCredits.getWidth() * multiplier * .6D);
-        creditsHeight = (int) ((double) core.assets.actualCredits.getHeight() * multiplier * .6D);
-        creditsX = Gdx.graphics.getWidth() / 2 - creditsWidth / 2;
-        creditsY = Gdx.graphics.getHeight() / 2 - creditsHeight / 2;
+        easyWidth = (int) ((double) core.assets.easyButton.getWidth() * multiplier * 3.5D);
+        easyHeight = (int) ((double) core.assets.easyButton.getHeight() * multiplier * 3.5D);
+        easyX = Gdx.graphics.getWidth() / 2 - (int) (1.5D * (double) easyWidth);
+        easyY = Gdx.graphics.getHeight() / 2 + (int) (1.5D * (double) easyHeight);
+        hardWidth = (int) ((double) core.assets.hardButton.getWidth() * multiplier * 3.5D);
+        hardHeight = (int) ((double) core.assets.hardButton.getHeight() * multiplier * 3.5D);
+        hardX = Gdx.graphics.getWidth() / 2 + (int) (.55D * (double) hardWidth);
+        hardY = Gdx.graphics.getHeight() / 2 + (int) (1.5D * (double) hardHeight);
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
     }
 
@@ -39,10 +44,10 @@ public class CreditScreen implements Screen {
     public void render(float delta) {
         Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.begin();
         batch.draw(core.assets.button, buttonX, buttonY, buttonWidth, buttonHeight);
-        batch.draw(core.assets.actualCredits, creditsX, creditsY, creditsWidth, creditsHeight);
+        batch.draw(core.assets.easyButton, easyX, easyY, easyWidth, easyHeight);
+        batch.draw(core.assets.hardButton, hardX, hardY, hardWidth, hardHeight);
         batch.end();
     }
 
@@ -79,6 +84,14 @@ public class CreditScreen implements Screen {
             if (x > buttonX && x < buttonX + buttonWidth && y > buttonY && y < buttonY + buttonHeight) {
                 core.setScreen(core.startScreen);
                 return true;
+            }
+            if (x > easyX && x < easyX + easyWidth && y > easyY && y < easyY + easyHeight) {
+                core.manager.prepare(4, 50);
+                core.setScreen(core.playScreen);
+            }
+            if (x > hardX && x < hardX + hardWidth && y > hardY && y < hardY + hardHeight) {
+                core.manager.prepare(4, 10000);
+                core.setScreen(core.playScreen);
             }
             return false;
         }
