@@ -2,12 +2,14 @@ package com.furryfaust.patterns;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.furryfaust.patterns.multiplayer.Multiplayer;
 import com.furryfaust.patterns.screens.*;
 
 public class Core extends Game {
 
     public Assets assets;
     public Manager manager;
+    public Multiplayer multiplayer;
     public Files files;
     public StartScreen startScreen;
     public PlayScreen playScreen;
@@ -20,6 +22,7 @@ public class Core extends Game {
     public void create() {
         assets = new Assets();
         manager = new Manager();
+        multiplayer = new Multiplayer();
         files = new Files();
         startScreen = new StartScreen(this);
         playScreen = new PlayScreen(this);

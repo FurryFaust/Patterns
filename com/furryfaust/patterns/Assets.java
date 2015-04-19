@@ -7,31 +7,36 @@ import java.util.ArrayList;
 public class Assets {
 
     public ArrayList<Texture> tiles = new ArrayList<Texture>();
-    public Texture board = new Texture("board.png");
-    public Texture trophy = new Texture("trophy.png");
-    public Texture continueButton = new Texture("continue.png");
-    public Texture playButton = new Texture("play.png");
-    public Texture creditsButton = new Texture("credits.png");
-    public Texture logButton = new Texture("log.png");
-    public Texture helpButton = new Texture("help.png");
-    public Texture logo = new Texture("isolatedlogo.png");
-    public Texture score = new Texture("score.png");
-    public Texture button = new Texture("button.png");
-    public Texture easyButton = new Texture("easy.png");
-    public Texture hardButton = new Texture("hard.png");
-    public Texture easyHistory = new Texture("easyhistory.png");
-    public Texture hardHistory = new Texture("hardhistory.png");
-    public Texture help1 = new Texture("helpwin.png");
-    public Texture help2 = new Texture("help1.png");
-    public Texture help3 = new Texture("help2.png");
-    public Texture help4 = new Texture("help3.png");
-    public Texture help5 = new Texture("help4.png");
-    public Texture actualCredits = new Texture("actualcredits.png");
+    public ArrayList<Texture> helpPages = new ArrayList<Texture>();
+    public Texture actualCredits = new Texture("content/credits.png");
+    public Texture random = new Texture("content/random.png");
+    public Texture campaign = new Texture("content/campaign.png");
+
+    public Texture board = new Texture("ui/playboard.png");
+    public Texture easyHistory = new Texture("ui/easylog.png");
+    public Texture hardHistory = new Texture("ui/hardlog.png");
+    public Texture score = new Texture("ui/scoreboard.png");
+
+    public Texture logo = new Texture("art/isolatedlogo.png");
+    public Texture trophy = new Texture("art/trophy.png");
+
+    public Texture continueButton = new Texture("buttons/continue.png");
+    public Texture playButton = new Texture("buttons/play.png");
+    public Texture creditsButton = new Texture("buttons/credits.png");
+    public Texture logButton = new Texture("buttons/log.png");
+    public Texture helpButton = new Texture("buttons/help.png");
+    public Texture button = new Texture("buttons/button.png");
+    public Texture easyButton = new Texture("buttons/easy.png");
+    public Texture hardButton = new Texture("buttons/hard.png");
 
     public Assets() {
         tiles.add(null);
         for (int i = 1; i != 36; i++) {
-            tiles.add(new Texture(i + ".png"));
+            tiles.add(new Texture("content/tiles/" + i + ".png"));
+        }
+        helpPages.add(null);
+        for (int i = 1; i != 6; i++) {
+            helpPages.add(new Texture("content/help/" + i + ".png"));
         }
     }
 

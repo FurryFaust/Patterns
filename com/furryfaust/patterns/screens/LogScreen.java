@@ -23,7 +23,7 @@ public class LogScreen implements Screen {
     public LogScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
-        font = new BitmapFont(Gdx.files.internal("font.fnt"));
+        font = new BitmapFont(Gdx.files.internal("misc/font.fnt"));
     }
 
     @Override

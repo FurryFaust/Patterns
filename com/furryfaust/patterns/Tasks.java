@@ -54,7 +54,7 @@ public class Tasks {
         }
 
         public int getOffset() {
-            return (int) (completion * (float) length);
+            return completion >= 1.0F ? length : (int) (completion * (float) length);
         }
 
     }

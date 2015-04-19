@@ -13,9 +13,10 @@ public class LevelScreen implements Screen {
     Core core;
     SpriteBatch batch;
     int buttonWidth, buttonHeight, buttonX,
-            buttonY, easyX, easyY, easyWidth,
-            easyHeight, hardX, hardY, hardWidth,
-            hardHeight;
+            buttonY, randomX, randomY, randomWidth,
+            randomHeight, campaignX, campaignY, campaignWidth,
+            campaignHeight, easyX, easyY, easyWidth,
+            easyHeight, hardX, hardY, hardWidth, hardHeight;
 
     public LevelScreen(Core core) {
         this.core = core;
@@ -29,14 +30,18 @@ public class LevelScreen implements Screen {
         buttonHeight = (int) ((double) core.assets.button.getHeight() * multiplier * 1.5D);
         buttonX = (int) ((double) buttonWidth / 4D);
         buttonY = Gdx.graphics.getHeight() - (int) ((double) buttonWidth * 1.25D);
-        easyWidth = (int) ((double) core.assets.easyButton.getWidth() * multiplier * 3.5D);
-        easyHeight = (int) ((double) core.assets.easyButton.getHeight() * multiplier * 3.5D);
-        easyX = Gdx.graphics.getWidth() / 2 - (int) (1.5D * (double) easyWidth);
-        easyY = Gdx.graphics.getHeight() / 2 + (int) (1.5D * (double) easyHeight);
-        hardWidth = (int) ((double) core.assets.hardButton.getWidth() * multiplier * 3.5D);
-        hardHeight = (int) ((double) core.assets.hardButton.getHeight() * multiplier * 3.5D);
-        hardX = Gdx.graphics.getWidth() / 2 + (int) (.55D * (double) hardWidth);
-        hardY = Gdx.graphics.getHeight() / 2 + (int) (1.5D * (double) hardHeight);
+        randomWidth = (int) ((double) core.assets.random.getWidth() * multiplier * 3.5D);
+        randomHeight = (int) ((double) core.assets.random.getHeight() * multiplier * 3.5D);
+        randomX = Gdx.graphics.getWidth() / 2 - randomWidth / 2;
+        randomY = Gdx.graphics.getHeight() / 2 + (int) ((double) randomHeight * 6.5D);
+        easyWidth = (int) ((double) core.assets.easyButton.getWidth() * multiplier * 2.5D);
+        easyHeight = (int) ((double) core.assets.easyButton.getHeight() * multiplier * 2.5D);
+        easyX = Gdx.graphics.getWidth() / 2 - (easyWidth * 2);
+        easyY = (randomY - randomHeight) - (int) ((double) easyHeight * .65D);
+        hardWidth = (int) ((double) core.assets.hardButton.getWidth() * multiplier * 2.5D);
+        hardHeight = (int) ((double) core.assets.hardButton.getHeight() * multiplier * 2.5D);
+        hardX = Gdx.graphics.getWidth() / 2 + (int) ((double) hardWidth * 1D);
+        hardY = (randomY - randomHeight) - (int) ((double) hardHeight * .65D);
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
     }
 
@@ -47,6 +52,8 @@ public class LevelScreen implements Screen {
         batch.begin();
         batch.draw(core.assets.button, buttonX, buttonY, buttonWidth, buttonHeight);
         batch.draw(core.assets.easyButton, easyX, easyY, easyWidth, easyHeight);
+        batch.draw(core.assets.random, randomX, randomY, randomWidth, randomHeight);
+        //batch.draw(core.assets.campaign, campaignX, campaignY, campaignWidth, campaignHeight);
         batch.draw(core.assets.hardButton, hardX, hardY, hardWidth, hardHeight);
         batch.end();
     }

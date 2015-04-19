@@ -29,7 +29,8 @@ public class PlayScreen implements Screen {
     public PlayScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
-        font = new BitmapFont(Gdx.files.internal("font.fnt"));
+        font = new BitmapFont(Gdx.files.internal("misc/font.fnt"));
+        font.setScale(2F * (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight());
     }
 
     @Override
@@ -53,9 +54,9 @@ public class PlayScreen implements Screen {
         scoreHeight = (int) ((double) core.assets.score.getHeight() * multiplier * 1.3D);
         scoreX = Gdx.graphics.getWidth() / 2 - (scoreWidth / 2);
         scoreY = boardY + boardHeight + (int) ((double) tileHeight * .25D);
-        timeShownX = scoreX + (int) ((double) scoreWidth * (84D / 206D));
+        timeShownX = scoreX + (int) ((double) scoreWidth * (87D / 206D));
         timeShownY = scoreY + scoreHeight - (int) ((double) scoreHeight * (36D / 78D));
-        movedShownX = scoreX + (int) ((double) scoreWidth * (156D / 206D));
+        movedShownX = scoreX + (int) ((double) scoreWidth * (160D / 206D));
         movedShownY = timeShownY;
         buttonWidth = (int) ((double) core.assets.button.getWidth() * multiplier * 1.5D);
         buttonHeight = (int) ((double) core.assets.button.getHeight() * multiplier * 1.5D);
@@ -173,7 +174,7 @@ public class PlayScreen implements Screen {
 
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
-            int speed = 8;
+            float speed = 6.75F;
             if (velocityX != 0) {
                 if (velocityY != 0) {
                     if (Math.abs(velocityX) >= Math.abs(velocityY)) {

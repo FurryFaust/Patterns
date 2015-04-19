@@ -34,24 +34,24 @@ public class HelpScreen implements Screen {
     public void show() {
         camera.position.set(new Vector2(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2), 0);
         double multiplier = (double) Gdx.graphics.getWidth() / 340D;
-        help1Width = (int) ((double) core.assets.help1.getWidth() * multiplier);
-        help1Height = (int) ((double) core.assets.help1.getHeight() * multiplier);
+        help1Width = (int) ((double) core.assets.helpPages.get(1).getWidth() * multiplier);
+        help1Height = (int) ((double) core.assets.helpPages.get(1).getHeight() * multiplier);
         help1X = Gdx.graphics.getWidth() / 2 - (help1Width / 2);
         help1Y = Gdx.graphics.getHeight() / 2 - (help1Height / 2);
-        help2Width = (int) ((double) core.assets.help2.getWidth() * multiplier);
-        help2Height = (int) ((double) core.assets.help2.getHeight() * multiplier);
+        help2Width = (int) ((double) core.assets.helpPages.get(2).getWidth() * multiplier);
+        help2Height = (int) ((double) core.assets.helpPages.get(2).getHeight() * multiplier);
         help2X = Gdx.graphics.getWidth() / 2 - (help2Width / 2) + Gdx.graphics.getWidth();
         help2Y = Gdx.graphics.getHeight() / 2 - (help2Height / 2);
-        help3Width = (int) ((double) core.assets.help3.getWidth() * multiplier);
-        help3Height = (int) ((double) core.assets.help3.getHeight() * multiplier);
+        help3Width = (int) ((double) core.assets.helpPages.get(3).getWidth() * multiplier);
+        help3Height = (int) ((double) core.assets.helpPages.get(3).getHeight() * multiplier);
         help3X = Gdx.graphics.getWidth() / 2 - (help3Width / 2) + (2 * Gdx.graphics.getWidth());
         help3Y = Gdx.graphics.getHeight() / 2 - (help3Height / 2);
-        help4Width = (int) ((double) core.assets.help4.getWidth() * multiplier);
-        help4Height = (int) ((double) core.assets.help4.getHeight() * multiplier);
+        help4Width = (int) ((double) core.assets.helpPages.get(4).getWidth() * multiplier);
+        help4Height = (int) ((double) core.assets.helpPages.get(4).getHeight() * multiplier);
         help4X = Gdx.graphics.getWidth() / 2 - (help4Width / 2) + (3 * Gdx.graphics.getWidth());
         help4Y = Gdx.graphics.getHeight() / 2 - (help4Height / 2);
-        help5Width = (int) ((double) core.assets.help5.getWidth() * multiplier);
-        help5Height = (int) ((double) core.assets.help5.getHeight() * multiplier);
+        help5Width = (int) ((double) core.assets.helpPages.get(5).getWidth() * multiplier);
+        help5Height = (int) ((double) core.assets.helpPages.get(5).getHeight() * multiplier);
         help5X = Gdx.graphics.getWidth() / 2 - (help5Width / 2) + (4 * Gdx.graphics.getWidth());
         help5Y = Gdx.graphics.getHeight() / 2 - (help5Height / 2);
         continueWidth = (int) ((67D / 262D) * (double) help5Width);
@@ -70,11 +70,11 @@ public class HelpScreen implements Screen {
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        batch.draw(core.assets.help1, help1X, help1Y, help1Width, help1Height);
-        batch.draw(core.assets.help2, help2X, help2Y, help2Width, help2Height);
-        batch.draw(core.assets.help3, help3X, help3Y, help3Width, help3Height);
-        batch.draw(core.assets.help4, help4X, help4Y, help4Width, help4Height);
-        batch.draw(core.assets.help5, help5X, help5Y, help5Width, help5Height);
+        batch.draw(core.assets.helpPages.get(1), help1X, help1Y, help1Width, help1Height);
+        batch.draw(core.assets.helpPages.get(2), help2X, help2Y, help2Width, help2Height);
+        batch.draw(core.assets.helpPages.get(3), help3X, help3Y, help3Width, help3Height);
+        batch.draw(core.assets.helpPages.get(4), help4X, help4Y, help4Width, help4Height);
+        batch.draw(core.assets.helpPages.get(5), help5X, help5Y, help5Width, help5Height);
         batch.end();
     }
 
@@ -134,13 +134,13 @@ public class HelpScreen implements Screen {
         public boolean pan(float x, float y, float deltaX, float deltaY) {
             if (deltaX < 0) {
                 if (camera.position.x < (double) Gdx.graphics.getWidth() * 4.5) {
-                    camera.position.set(camera.position.sub(deltaX, 0, 0));
+                    camera.position.set(camera.position.sub(2F * deltaX, 0, 0));
                     return true;
                 }
             }
             if (deltaX > 0) {
                 if (camera.position.x > Gdx.graphics.getWidth() / 2) {
-                    camera.position.set(camera.position.sub(deltaX, 0, 0));
+                    camera.position.set(camera.position.sub(2F * deltaX, 0, 0));
                     return true;
                 }
             }
