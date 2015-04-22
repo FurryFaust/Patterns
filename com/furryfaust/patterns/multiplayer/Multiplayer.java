@@ -5,13 +5,14 @@ import com.badlogic.gdx.Net;
 
 public class Multiplayer {
 
-    public boolean isConnected;
+    public boolean temp;
 
     public Multiplayer() {
-        checkConnection("Kevin", "bear");
     }
 
     public void checkConnection(String username, String password) {
+        temp = false;
+        
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl("http://localhost:3000/api/auth?username=" + username + "&password="
                 + password);
@@ -19,31 +20,21 @@ public class Multiplayer {
 
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                Gdx.app.log("Status Code", String.valueOf(httpResponse.getStatus().getStatusCode()));
-                Gdx.app.log("Response", httpResponse.getResultAsString());
-                isConnected = Boolean.valueOf(httpResponse.getResultAsString());
+                temp = Boolean.valueOf(httpResponse.getResultAsString());
             }
 
             @Override
             public void failed(Throwable t) {
-                isConnected = false;
-                Gdx.app.log("Status Code", "Failed");
+                temp = false;
             }
 
             @Override
             public void cancelled() {
-                isConnected = false;
+                temp = false;
             }
 
         };
         Gdx.net.sendHttpRequest(request, response);
-    }
-
-
-    public void requestGame() {
-        if (isConnected) {
-
-        }
     }
 
 }

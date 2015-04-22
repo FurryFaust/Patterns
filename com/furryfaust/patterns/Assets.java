@@ -20,14 +20,17 @@ public class Assets {
     public Texture logo = new Texture("art/isolatedlogo.png");
     public Texture trophy = new Texture("art/trophy.png");
 
-    public Texture continueButton = new Texture("buttons/continue.png");
-    public Texture playButton = new Texture("buttons/play.png");
-    public Texture creditsButton = new Texture("buttons/credits.png");
-    public Texture logButton = new Texture("buttons/log.png");
-    public Texture helpButton = new Texture("buttons/help.png");
-    public Texture button = new Texture("buttons/button.png");
-    public Texture easyButton = new Texture("buttons/easy.png");
-    public Texture hardButton = new Texture("buttons/hard.png");
+    public Texture continueButton = new Texture("input/buttons/continue.png");
+    public Texture playButton = new Texture("input/buttons/play.png");
+    public Texture creditsButton = new Texture("input/buttons/credits.png");
+    public Texture logButton = new Texture("input/buttons/log.png");
+    public Texture helpButton = new Texture("input/buttons/help.png");
+    public Texture button = new Texture("input/buttons/button.png");
+    public Texture easyButton = new Texture("input/buttons/easy.png");
+    public Texture hardButton = new Texture("input/buttons/hard.png");
+
+    public Texture loginButton = new Texture("input/buttons/login.png");
+    public Texture textInput = new Texture("input/textinput.png");
 
     public Assets() {
         tiles.add(null);
