@@ -33,7 +33,7 @@ public class LoginScreen implements Screen {
     @Override
     public void show() {
         double multiplier = (double) Gdx.graphics.getWidth() / 330D;
-
+        focus = 2;
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
         tempUserStore = "username";
         tempPassStore = "password";
@@ -132,12 +132,13 @@ public class LoginScreen implements Screen {
 
                     @Override
                     public void run() {
-                        if (core.multiplayer.temp) {
-                            //Switch Screen
+                        if (core.multiplayer.temp.startsWith("true")) {
+                            core.setScreen(core.multiplayerScreen);
                         }
                     }
 
                 }, 1);
+                return true;
             }
             focus = 2;
             tempUserStore = tempUserStore == "" ? "username" : tempUserStore;

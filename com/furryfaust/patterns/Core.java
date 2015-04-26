@@ -1,9 +1,12 @@
 package com.furryfaust.patterns;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.multiplayer.Multiplayer;
 import com.furryfaust.patterns.multiplayer.screens.LoginScreen;
+import com.furryfaust.patterns.multiplayer.screens.MultiplayerScreen;
 import com.furryfaust.patterns.screens.*;
 
 public class Core extends Game {
@@ -13,7 +16,8 @@ public class Core extends Game {
     public Multiplayer multiplayer;
     public Files files;
     public Screen startScreen, playScreen, levelScreen,
-            logScreen, creditScreen, helpScreen, loginScreen;
+            logScreen, creditScreen, helpScreen, loginScreen,
+            multiplayerScreen;
 
     @Override
     public void create() {
@@ -28,13 +32,24 @@ public class Core extends Game {
         creditScreen = new CreditScreen(this);
         helpScreen = new HelpScreen(this);
         loginScreen = new LoginScreen(this);
+        multiplayerScreen = new MultiplayerScreen(this);
         /*if (Gdx.files.local("seenhelp").exists()) {
             setScreen(startScreen);
         } else {
             setScreen(helpScreen);
             Gdx.files.local("seenhelp").write(false);
         }*/
+        multiplayer.checkConnection("Kevin_Faust", "fakerfaker");
         setScreen(loginScreen);
+
+        Timer.schedule(new Timer.Task() {
+
+            @Override
+            public void run() {
+                Gdx.app.log("Connection", multiplayer.temp);
+            }
+
+        }, 1);
     }
 
 }

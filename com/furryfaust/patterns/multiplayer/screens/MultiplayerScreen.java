@@ -1,8 +1,15 @@
 package com.furryfaust.patterns.multiplayer.screens;
 
 import com.badlogic.gdx.Screen;
+import com.furryfaust.patterns.Core;
 
 public class MultiplayerScreen implements Screen {
+
+    Core core;
+
+    public MultiplayerScreen(Core core) {
+        this.core = core;
+    }
 
     @Override
     public void show() {

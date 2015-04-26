@@ -5,32 +5,62 @@ import com.badlogic.gdx.Net;
 
 public class Multiplayer {
 
-    public boolean temp;
+    public final String api = "http://patterns.furryfaust.com/api/";
+    public String temp;
 
     public Multiplayer() {
     }
 
     public void checkConnection(String username, String password) {
-        temp = false;
-        
+        temp = "";
+
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
-        request.setUrl("http://localhost:3000/api/auth?username=" + username + "&password="
+        request.setUrl(api + "auth.php?username=" + username + "&password="
                 + password);
         Net.HttpResponseListener response = new Net.HttpResponseListener() {
 
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                temp = Boolean.valueOf(httpResponse.getResultAsString());
+                temp = httpResponse.getResultAsString();
             }
 
             @Override
             public void failed(Throwable t) {
-                temp = false;
+                temp = "";
             }
 
             @Override
             public void cancelled() {
-                temp = false;
+                temp = "";
+            }
+
+        };
+        Gdx.net.sendHttpRequest(request, response);
+    }
+
+    public void createAccount(String username, String password) {
+        temp = "";
+
+        Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
+        request.setUrl(api + "createaccount.php?username=" + username + "&password="
+                + password);
+
+
+        Net.HttpResponseListener response = new Net.HttpResponseListener() {
+
+            @Override
+            public void handleHttpResponse(Net.HttpResponse httpResponse) {
+                temp = httpResponse.getResultAsString();
+            }
+
+            @Override
+            public void failed(Throwable t) {
+                temp = "";
+            }
+
+            @Override
+            public void cancelled() {
+                temp = "";
             }
 
         };
