@@ -1,6 +1,8 @@
 package com.furryfaust.patterns.multiplayer.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.furryfaust.patterns.Core;
 
 public class MultiplayerScreen implements Screen {
@@ -13,12 +15,13 @@ public class MultiplayerScreen implements Screen {
 
     @Override
     public void show() {
-
+        Gdx.input.setOnscreenKeyboardVisible(true);
     }
 
     @Override
     public void render(float delta) {
-
+        Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
+        Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
     @Override

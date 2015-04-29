@@ -6,6 +6,7 @@ import com.badlogic.gdx.Net;
 public class Multiplayer {
 
     public final String api = "http://patterns.furryfaust.com/api/";
+    public String usernameStore, passwordStore;
     public String temp;
 
     public Multiplayer() {
@@ -26,7 +27,7 @@ public class Multiplayer {
 
             @Override
             public void failed(Throwable t) {
-                temp = "";
+                temp = "false - connection failed";
             }
 
             @Override
@@ -55,7 +56,7 @@ public class Multiplayer {
 
             @Override
             public void failed(Throwable t) {
-                temp = "";
+                temp = "false - connection failed";
             }
 
             @Override

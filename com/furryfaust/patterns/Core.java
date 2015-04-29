@@ -39,9 +39,9 @@ public class Core extends Game {
             setScreen(helpScreen);
             Gdx.files.local("seenhelp").write(false);
         }*/
-        multiplayer.checkConnection("Kevin_Faust", "fakerfaker");
+        multiplayer.checkConnection("Kevin_Fuck", "BloopBloop");
         setScreen(loginScreen);
-
+        Gdx.app.log("Local Storage", Gdx.files.getLocalStoragePath());
         Timer.schedule(new Timer.Task() {
 
             @Override
