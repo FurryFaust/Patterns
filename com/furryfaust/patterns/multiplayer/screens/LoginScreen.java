@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.Core;
 
 public class LoginScreen implements Screen {
@@ -51,13 +52,18 @@ public class LoginScreen implements Screen {
         passwordInputY = Gdx.graphics.getHeight() / 2 + (int) (1.75D * (double) passwordInputHeight);
         passwordX = passwordInputX + (int) ((double) passwordInputX * (8D / 50D));
         passwordY = passwordInputY + (int) ((double) passwordInputY * (1D / 18D));
+        loginWidth = (int) ((double) core.assets.loginButton.getWidth() * multiplier * 4D);
+        loginHeight = (int) ((double) core.assets.loginButton.getHeight() * multiplier * 4D);
+        loginX = Gdx.graphics.getWidth() / 2 - loginWidth / 2;
+        loginY = passwordInputY - (int) (1.5D * (double) loginHeight);
+
         Gdx.input.setInputProcessor(new InputManager());
     }
 
     @Override
     public void render(float delta) {
         camera.update();
-        //batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
 
         Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -88,6 +94,21 @@ public class LoginScreen implements Screen {
                     && touched.y > passwordInputY && touched.y < passwordInputY + passwordInputHeight) {
                 focus = 1;
                 Gdx.input.setOnscreenKeyboardVisible(true);
+                return true;
+            }
+            if (touched.x > loginX && touched.x < loginX + loginWidth && touched.y > loginY
+                    && touched.y < loginY + loginHeight) {
+                focus = 2;
+                Gdx.input.setOnscreenKeyboardVisible(false);
+                core.multiplayer.checkConnection(tempUserStore, tempPassStore);
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        if (core.multiplayer.temp.startsWith("true")) {
+                            core.setScreen(core.multiplayerScreen);
+                        }
+                    }
+                }, 1F);
                 return true;
             }
             focus = 2;
