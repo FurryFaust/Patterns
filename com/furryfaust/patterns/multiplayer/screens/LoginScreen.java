@@ -4,8 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.furryfaust.patterns.Core;
 
 public class LoginScreen implements Screen {
@@ -14,36 +17,52 @@ public class LoginScreen implements Screen {
     SpriteBatch batch;
     BitmapFont font;
     String tempUserStore, tempPassStore;
+    int focus;
     int usernameInputX, usernameInputY, usernameInputWidth,
             usernameInputHeight, passwordInputX, passwordInputY,
             passwordInputWidth, passwordInputHeight, loginX, loginY,
-            loginWidth, loginHeight, usernameX, usernameY;
+            loginWidth, loginHeight, usernameX, usernameY, passwordX,
+            passwordY;
+    OrthographicCamera camera;
 
     public LoginScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
         font = new BitmapFont(Gdx.files.internal("misc/font.fnt"));
         font.setScale(2F * (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight());
-        Gdx.input.setOnscreenKeyboardVisible(true);
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override
     public void show() {
+        camera.position.set(new Vector2(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2), 0);
         double multiplier = (double) Gdx.graphics.getWidth() / 330D;
         tempUserStore = tempPassStore = "";
+        focus = 2;
         usernameInputWidth = (int) ((double) core.assets.textInput.getWidth() * multiplier * 5D);
         usernameInputHeight = (int) ((double) core.assets.textInput.getHeight() * multiplier * 3.5D);
         usernameInputX = Gdx.graphics.getWidth() / 2 - usernameInputWidth / 2;
-        usernameInputY = Gdx.graphics.getHeight() / 2 + usernameInputHeight;
-        usernameX = usernameInputX + (int) ((double) usernameInputX * (2D / 50D));
-        usernameY = usernameInputY;
+        usernameInputY = Gdx.graphics.getHeight() / 2 + (3 * usernameInputHeight);
+        usernameX = usernameInputX + (int) ((double) usernameInputX * (8D / 50D));
+        usernameY = usernameInputY + (int) ((double) usernameInputY * (1D / 18D));
+        passwordInputWidth = usernameInputWidth;
+        passwordInputHeight = usernameInputHeight;
+        passwordInputX = Gdx.graphics.getWidth() / 2 - passwordInputWidth / 2;
+        passwordInputY = Gdx.graphics.getHeight() / 2 + (int) (1.75D * (double) passwordInputHeight);
+        passwordX = passwordInputX + (int) ((double) passwordInputX * (8D / 50D));
+        passwordY = passwordInputY + (int) ((double) passwordInputY * (1D / 18D));
         Gdx.input.setInputProcessor(new InputManager());
     }
 
     @Override
     public void render(float delta) {
+        camera.update();
+        //batch.setProjectionMatrix(camera.combined);
+
         Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        handleTouch();
 
         batch.begin();
         batch.draw(core.assets.textInput, usernameInputX, usernameInputY, usernameInputWidth, usernameInputHeight);
@@ -51,9 +70,32 @@ public class LoginScreen implements Screen {
         batch.draw(core.assets.loginButton, loginX, loginY, loginWidth, loginHeight);
 
         font.draw(batch, tempUserStore, usernameX, usernameY);
+        font.draw(batch, tempPassStore, passwordX, passwordY);
         batch.end();
 
     }
+
+    public boolean handleTouch() {
+        if (Gdx.input.isTouched()) {
+            Vector3 touched = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            if (touched.x > usernameInputX && touched.x < usernameInputX + usernameInputWidth
+                    && touched.y > usernameInputY && touched.y < usernameInputY + usernameInputHeight) {
+                focus = 0;
+                Gdx.input.setOnscreenKeyboardVisible(true);
+                return true;
+            }
+            if (touched.x > passwordInputX && touched.x < passwordInputX + passwordInputWidth
+                    && touched.y > passwordInputY && touched.y < passwordInputY + passwordInputHeight) {
+                focus = 1;
+                Gdx.input.setOnscreenKeyboardVisible(true);
+                return true;
+            }
+            focus = 2;
+            Gdx.input.setOnscreenKeyboardVisible(false);
+        }
+        return false;
+    }
+
 
     @Override
     public void resize(int width, int height) {
@@ -95,13 +137,28 @@ public class LoginScreen implements Screen {
 
         @Override
         public boolean keyTyped(char character) {
-            if (character >= 'a' && character <= 'z') {
-                tempUserStore += character;
+            if (focus == 0) {
+                if ((character >= 'a' && character <= 'z') || (character >= '0' && character <= '9')) {
+                    tempUserStore += character;
+                    return true;
+                }
+                if (character == '\b' && tempUserStore.length() > 0) {
+                    tempUserStore = tempUserStore.substring(0, tempUserStore.length() - 1);
+                    return true;
+                }
             }
-            if (character == '\b') {
-                tempUserStore = tempUserStore.substring(0, tempUserStore.length() - 1);
+            if (focus == 1) {
+                if ((character >= 'a' && character <= 'z') || (character >= '0' && character <= '9')) {
+                    tempPassStore += character;
+                    return true;
+                }
+                if (character == '\b' && tempPassStore.length() > 0) {
+                    tempPassStore = tempPassStore.substring(0, tempPassStore.length() - 1);
+                    return true;
+                }
             }
             if (character == '\n' || character == '\r') {
+                focus = 2;
                 Gdx.input.setOnscreenKeyboardVisible(false);
             }
             return false;
