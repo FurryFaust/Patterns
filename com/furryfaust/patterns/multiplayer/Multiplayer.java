@@ -10,6 +10,7 @@ public class Multiplayer {
     public String temp;
 
     public Multiplayer() {
+        usernameStore = passwordStore = temp = "";
     }
 
     public void checkConnection(String username, String password) {

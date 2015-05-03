@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.Core;
 
 public class LevelScreen implements Screen {
@@ -15,8 +16,12 @@ public class LevelScreen implements Screen {
     int buttonWidth, buttonHeight, buttonX,
             buttonY, randomX, randomY, randomWidth,
             randomHeight, campaignX, campaignY, campaignWidth,
-            campaignHeight, easyX, easyY, easyWidth,
-            easyHeight, hardX, hardY, hardWidth, hardHeight;
+            campaignHeight, easyX, easyY, easyWidth, easyHeight,
+            hardX, hardY, hardWidth, hardHeight, multiplayerWidth,
+            multiplayerHeight, multiplayerX, multiplayerY, loginX,
+            loginY, loginWidth, loginHeight, createX, createY,
+            createWidth, createHeight;
+    boolean loggedIn;
 
     public LevelScreen(Core core) {
         this.core = core;
@@ -33,7 +38,7 @@ public class LevelScreen implements Screen {
         randomWidth = (int) ((double) core.assets.random.getWidth() * multiplier * 3.5D);
         randomHeight = (int) ((double) core.assets.random.getHeight() * multiplier * 3.5D);
         randomX = Gdx.graphics.getWidth() / 2 - randomWidth / 2;
-        randomY = Gdx.graphics.getHeight() / 2 + (int) ((double) randomHeight * 6.5D);
+        randomY = Gdx.graphics.getHeight() / 2 + (int) ((double) randomHeight * 6D);
         easyWidth = (int) ((double) core.assets.easyButton.getWidth() * multiplier * 2.5D);
         easyHeight = (int) ((double) core.assets.easyButton.getHeight() * multiplier * 2.5D);
         easyX = Gdx.graphics.getWidth() / 2 - (easyWidth * 2);
@@ -42,7 +47,23 @@ public class LevelScreen implements Screen {
         hardHeight = (int) ((double) core.assets.hardButton.getHeight() * multiplier * 2.5D);
         hardX = Gdx.graphics.getWidth() / 2 + (int) ((double) hardWidth * 1D);
         hardY = (randomY - randomHeight) - (int) ((double) hardHeight * .65D);
+        multiplayerWidth = (int) ((double) core.assets.multiplayer2.getWidth() * multiplier * 3.5D);
+        multiplayerHeight = (int) ((double) core.assets.multiplayer2.getHeight() * multiplier * 3.5D);
+        multiplayerX = Gdx.graphics.getWidth() / 2 - multiplayerWidth / 2;
+        multiplayerY = Gdx.graphics.getHeight() / 2 - multiplayerHeight;
+        loginWidth = (int) ((double) core.assets.login2Button.getWidth() * multiplier * 2.5D);
+        loginHeight = (int) ((double) core.assets.login2Button.getHeight() * multiplier * 2.5D);
+        loginX = Gdx.graphics.getWidth() / 2 - (loginWidth * 2);
+        loginY = (multiplayerY - multiplayerHeight) - (int) ((double) loginHeight * .65D);
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
+        core.multiplayer.checkConnection(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                loggedIn = core.multiplayer.temp.equals("true");
+            }
+        }, 1F);
     }
 
     @Override
@@ -55,6 +76,11 @@ public class LevelScreen implements Screen {
         batch.draw(core.assets.random, randomX, randomY, randomWidth, randomHeight);
         //batch.draw(core.assets.campaign, campaignX, campaignY, campaignWidth, campaignHeight);
         batch.draw(core.assets.hardButton, hardX, hardY, hardWidth, hardHeight);
+        batch.draw(core.assets.multiplayer2, multiplayerX, multiplayerY, multiplayerWidth, multiplayerHeight);
+        if (!loggedIn) {
+            batch.draw(core.assets.login2Button, loginX, loginY, loginWidth, loginHeight);
+        }
+
         batch.end();
     }
 
@@ -99,6 +125,9 @@ public class LevelScreen implements Screen {
             if (x > hardX && x < hardX + hardWidth && y > hardY && y < hardY + hardHeight) {
                 core.manager.prepare(4, 10000);
                 core.setScreen(core.playScreen);
+            }
+            if (x > loginX && x < loginX + loginWidth && y > loginY && y < loginY + loginHeight) {
+                core.setScreen(core.loginScreen);
             }
             return false;
         }
