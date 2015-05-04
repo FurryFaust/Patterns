@@ -3,6 +3,7 @@ package com.furryfaust.patterns.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
@@ -13,6 +14,7 @@ public class LevelScreen implements Screen {
 
     Core core;
     SpriteBatch batch;
+    BitmapFont font;
     int buttonWidth, buttonHeight, buttonX,
             buttonY, randomX, randomY, randomWidth,
             randomHeight, campaignX, campaignY, campaignWidth,
@@ -20,12 +22,15 @@ public class LevelScreen implements Screen {
             hardX, hardY, hardWidth, hardHeight, multiplayerWidth,
             multiplayerHeight, multiplayerX, multiplayerY, loginX,
             loginY, loginWidth, loginHeight, createX, createY,
-            createWidth, createHeight;
-    boolean loggedIn;
+            createWidth, createHeight, welcomeX, welcomeY, signoutX,
+            signoutY, signoutWidth, signoutHeight;
+    boolean loggedIn, check;
 
     public LevelScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
+        font = new BitmapFont(Gdx.files.internal("misc/font.fnt"));
+        font.setScale(1.9F * (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight());
     }
 
     @Override
@@ -55,15 +60,32 @@ public class LevelScreen implements Screen {
         loginHeight = (int) ((double) core.assets.login2Button.getHeight() * multiplier * 2.5D);
         loginX = Gdx.graphics.getWidth() / 2 - (loginWidth * 2);
         loginY = (multiplayerY - multiplayerHeight) - (int) ((double) loginHeight * .65D);
+        welcomeY = multiplayerY - (int) ((double) multiplayerHeight * 1D / 9D);
+        createWidth = (int) ((double) core.assets.createButton.getWidth() * multiplier * 2.5D);
+        createHeight = (int) ((double) core.assets.createButton.getHeight() * multiplier * 2.5D);
+        createX = Gdx.graphics.getWidth() / 2 + createWidth - (int) ((6D / 21D) * (double) createWidth);
+        createY = loginY;
+        signoutWidth = (int) ((double) core.assets.signoutButton.getWidth() * multiplier * 2.5D);
+        signoutHeight = (int) ((double) core.assets.signoutButton.getHeight() * multiplier * 2.5D);
+        signoutX = Gdx.graphics.getWidth() / 2 - (signoutWidth * 2);
+        signoutY = (multiplayerY - multiplayerHeight) - (int) ((double) signoutHeight * .8D);
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
         core.multiplayer.checkConnection(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
 
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                loggedIn = core.multiplayer.temp.equals("true");
-            }
-        }, 1F);
+        if (core.multiplayer.usernameStore != "" && core.multiplayer.passwordStore != "") {
+            check = true;
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    loggedIn = core.multiplayer.temp.equals("true");
+                    if (loggedIn) {
+                        welcomeX = Gdx.graphics.getWidth() / 2 -
+                                (int) font.getBounds("Welcome back," + core.multiplayer.usernameStore).width / 2;
+                    }
+                    check = false;
+                }
+            }, 1F);
+        }
     }
 
     @Override
@@ -77,8 +99,13 @@ public class LevelScreen implements Screen {
         //batch.draw(core.assets.campaign, campaignX, campaignY, campaignWidth, campaignHeight);
         batch.draw(core.assets.hardButton, hardX, hardY, hardWidth, hardHeight);
         batch.draw(core.assets.multiplayer2, multiplayerX, multiplayerY, multiplayerWidth, multiplayerHeight);
-        if (!loggedIn) {
+        if (!loggedIn && !check) {
             batch.draw(core.assets.login2Button, loginX, loginY, loginWidth, loginHeight);
+            batch.draw(core.assets.createButton, createX, createY, createWidth, createHeight);
+        }
+        if (loggedIn && !check) {
+            font.draw(batch, "Welcome back, " + core.multiplayer.usernameStore, welcomeX, welcomeY);
+            batch.draw(core.assets.signoutButton, signoutX, signoutY, signoutWidth, signoutHeight);
         }
 
         batch.end();
@@ -126,8 +153,20 @@ public class LevelScreen implements Screen {
                 core.manager.prepare(4, 10000);
                 core.setScreen(core.playScreen);
             }
-            if (x > loginX && x < loginX + loginWidth && y > loginY && y < loginY + loginHeight) {
-                core.setScreen(core.loginScreen);
+            if (!loggedIn && !check) {
+                if (x > loginX && x < loginX + loginWidth && y > loginY && y < loginY + loginHeight) {
+                    core.setScreen(core.loginScreen);
+                }
+                if (x > createX && x < createX + createWidth && y > createY && y < createY + createHeight) {
+                    core.setScreen(core.createScreen);
+                }
+            }
+            if (loggedIn && !check) {
+                if (x > signoutX && x < signoutX + signoutWidth && y > signoutY && y < signoutY + signoutHeight) {
+                    loggedIn = false;
+                    core.multiplayer.usernameStore = "";
+                    core.multiplayer.passwordStore = "";
+                }
             }
             return false;
         }

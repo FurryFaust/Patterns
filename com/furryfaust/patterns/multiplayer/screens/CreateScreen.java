@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.Core;
 
-public class LoginScreen implements Screen {
+public class CreateScreen implements Screen {
 
     Core core;
     SpriteBatch batch;
@@ -22,13 +22,13 @@ public class LoginScreen implements Screen {
     int buttonWidth, buttonHeight, buttonX,
             buttonY, usernameInputX, usernameInputY, usernameInputWidth,
             usernameInputHeight, passwordInputX, passwordInputY,
-            passwordInputWidth, passwordInputHeight, loginX, loginY,
-            loginWidth, loginHeight, usernameX, usernameY, passwordX,
+            passwordInputWidth, passwordInputHeight, createX, createY,
+            createWidth, createHeight, usernameX, usernameY, passwordX,
             passwordY, errorX, errorY, multiplayerWidth, multiplayerHeight,
             multiplayerX, multiplayerY;
     OrthographicCamera camera;
 
-    public LoginScreen(Core core) {
+    public CreateScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
         font = new BitmapFont(Gdx.files.internal("misc/font.fnt"));
@@ -58,10 +58,10 @@ public class LoginScreen implements Screen {
         passwordInputY = Gdx.graphics.getHeight() / 2 - (int) (.25D * (double) passwordInputHeight);
         passwordX = passwordInputX + (int) ((double) passwordInputX * (8D / 50D));
         passwordY = passwordInputY + (int) ((double) passwordInputY * (1.25D / 18D));
-        loginWidth = (int) ((double) core.assets.loginButton.getWidth() * multiplier * 4D);
-        loginHeight = (int) ((double) core.assets.loginButton.getHeight() * multiplier * 4D);
-        loginX = Gdx.graphics.getWidth() / 2 - loginWidth / 2;
-        loginY = passwordInputY - (int) (1.25D * (double) loginHeight);
+        createWidth = (int) ((double) core.assets.create2Button.getWidth() * multiplier * 4D);
+        createHeight = (int) ((double) core.assets.create2Button.getHeight() * multiplier * 4D);
+        createX = Gdx.graphics.getWidth() / 2 - createWidth / 2;
+        createY = passwordInputY - (int) (1.25D * (double) createHeight);
         errorX = Gdx.graphics.getWidth() / 2 - (int) (font.getBounds(errorMessage).width / 2F);
         errorY = usernameInputY + (int) (font.getBounds(errorMessage).height * 5F);
         multiplayerWidth = (int) ((double) core.assets.multiplayer.getWidth() * multiplier * 4D);
@@ -85,7 +85,7 @@ public class LoginScreen implements Screen {
         batch.draw(core.assets.button, buttonX, buttonY, buttonWidth, buttonHeight);
         batch.draw(core.assets.textInput, usernameInputX, usernameInputY, usernameInputWidth, usernameInputHeight);
         batch.draw(core.assets.textInput, passwordInputX, passwordInputY, passwordInputWidth, passwordInputHeight);
-        batch.draw(core.assets.loginButton, loginX, loginY, loginWidth, loginHeight);
+        batch.draw(core.assets.create2Button, createX, createY, createWidth, createHeight);
         batch.draw(core.assets.multiplayer, multiplayerX, multiplayerY, multiplayerWidth, multiplayerHeight);
 
         font.draw(batch, tempUserStore, usernameX, usernameY);
@@ -96,7 +96,7 @@ public class LoginScreen implements Screen {
     }
 
     public boolean handleTouch() {
-        if (Gdx.input.isTouched()) {
+        if (Gdx.input.justTouched()) {
             Vector3 touched = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             if (touched.x > usernameInputX && touched.x < usernameInputX + usernameInputWidth
                     && touched.y > usernameInputY && touched.y < usernameInputY + usernameInputHeight) {
@@ -116,27 +116,33 @@ public class LoginScreen implements Screen {
                     && touched.y < buttonY + buttonHeight) {
                 core.setScreen(core.levelScreen);
             }
-            if (touched.x > loginX && touched.x < loginX + loginWidth && touched.y > loginY
-                    && touched.y < loginY + loginHeight) {
-                errorMessage = "";
-                focus = 2;
-                Gdx.input.setOnscreenKeyboardVisible(false);
-                core.multiplayer.checkConnection(tempUserStore, tempPassStore);
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        if (core.multiplayer.temp.startsWith("true")) {
-                            core.multiplayer.usernameStore = tempUserStore;
-                            core.multiplayer.passwordStore = tempPassStore;
-                            core.setScreen(core.levelScreen);
-                        } else {
-                            errorMessage = core.multiplayer.temp;
-                            errorX = Gdx.graphics.getWidth() / 2 - (int) (font.getBounds(errorMessage).width / 2F);
-                            errorY = usernameInputY + (int) (font.getBounds(errorMessage).height * 5F);
+            if (touched.x > createX && touched.x < createX + createWidth && touched.y > createY
+                    && touched.y < createY + createHeight) {
+                if (tempUserStore.length() > 5 && tempUserStore.length() < 16 && tempPassStore.length() > 5
+                        && tempPassStore.length() < 16) {
+                    errorMessage = "";
+                    focus = 2;
+                    Gdx.input.setOnscreenKeyboardVisible(false);
+                    core.multiplayer.createAccount(tempUserStore, tempPassStore);
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            if (core.multiplayer.temp.startsWith("true")) {
+                                core.multiplayer.usernameStore = tempUserStore;
+                                core.multiplayer.passwordStore = tempPassStore;
+                                core.setScreen(core.levelScreen);
+                            } else {
+                                errorMessage = core.multiplayer.temp;
+                                errorX = Gdx.graphics.getWidth() / 2 - (int) (font.getBounds(errorMessage).width / 2F);
+                                errorY = usernameInputY + (int) (font.getBounds(errorMessage).height * 5F);
+                            }
+                            Gdx.app.log("temp", core.multiplayer.temp);
                         }
-                    }
-                }, 1F);
-                return true;
+                    }, 1F);
+                    return true;
+                } else {
+                    errorMessage = "false - username/password between 5 and 16 characters";
+                }
             }
             focus = 2;
             Gdx.input.setOnscreenKeyboardVisible(false);
