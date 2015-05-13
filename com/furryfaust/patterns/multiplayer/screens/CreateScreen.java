@@ -102,6 +102,7 @@ public class CreateScreen implements Screen {
                     && touched.y > usernameInputY && touched.y < usernameInputY + usernameInputHeight) {
                 errorMessage = "";
                 focus = 0;
+                Gdx.input.setOnscreenKeyboardVisible(false);
                 Gdx.input.setOnscreenKeyboardVisible(true);
                 return true;
             }
@@ -109,6 +110,7 @@ public class CreateScreen implements Screen {
                     && touched.y > passwordInputY && touched.y < passwordInputY + passwordInputHeight) {
                 errorMessage = "";
                 focus = 1;
+                Gdx.input.setOnscreenKeyboardVisible(false);
                 Gdx.input.setOnscreenKeyboardVisible(true);
                 return true;
             }

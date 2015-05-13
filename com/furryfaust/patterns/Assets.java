@@ -35,6 +35,7 @@ public class Assets {
     public Texture createButton = new Texture("input/buttons/create.png");
     public Texture create2Button = new Texture("input/buttons/create2.png");
     public Texture signoutButton = new Texture("input/buttons/signout.png");
+    public Texture gamesButton = new Texture("input/buttons/games.png");
 
     public Texture textInput = new Texture("input/textinput.png");
 

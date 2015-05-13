@@ -20,6 +20,16 @@ public class Manager {
     public void prepare(int size, int difficulty) {
         tiles = new int[size][size];
         populate(tiles);
+
+        String s = "";
+        for (int i = 0; i != 4; i++) {
+            for (int j = 0; j != 4; j++) {
+                s += tiles[i][j] + " ";
+            }
+        }
+        System.out.println(s);
+        System.out.println(s.length());
+
         winningTiles = new int[size][size];
         populate(winningTiles);
         scramble(difficulty);
