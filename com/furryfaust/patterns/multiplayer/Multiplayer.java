@@ -19,25 +19,7 @@ public class Multiplayer {
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl(api + "auth.php?username=" + username + "&password="
                 + password);
-        Net.HttpResponseListener response = new Net.HttpResponseListener() {
-
-            @Override
-            public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                temp = httpResponse.getResultAsString();
-            }
-
-            @Override
-            public void failed(Throwable t) {
-                temp = "false - connection failed";
-            }
-
-            @Override
-            public void cancelled() {
-                temp = "";
-            }
-
-        };
-        Gdx.net.sendHttpRequest(request, response);
+        Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
 
     public void createAccount(String username, String password) {
@@ -48,25 +30,39 @@ public class Multiplayer {
                 + password);
 
 
-        Net.HttpResponseListener response = new Net.HttpResponseListener() {
+        Gdx.net.sendHttpRequest(request, new ResponseListener());
+    }
 
-            @Override
-            public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                temp = httpResponse.getResultAsString();
-            }
+    public void requestGames(String username, String password) {
+        temp = "";
 
-            @Override
-            public void failed(Throwable t) {
-                temp = "false - connection failed";
-            }
+        Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
+        request.setUrl(api + "games.php?username=" + username + "&password="
+                + password);
 
-            @Override
-            public void cancelled() {
-                temp = "";
-            }
+        Gdx.net.sendHttpRequest(request, new ResponseListener());
+    }
 
-        };
-        Gdx.net.sendHttpRequest(request, response);
+    public void infoGames(String username, String password, String ids) {
+
+    }
+
+    class ResponseListener implements Net.HttpResponseListener {
+
+        @Override
+        public void handleHttpResponse(Net.HttpResponse httpResponse) {
+            temp = httpResponse.getResultAsString();
+        }
+
+        @Override
+        public void failed(Throwable t) {
+            temp = "false - connection failed";
+        }
+
+        @Override
+        public void cancelled() {
+            temp = "";
+        }
     }
 
 }
