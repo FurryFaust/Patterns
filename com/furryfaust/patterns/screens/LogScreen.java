@@ -50,6 +50,7 @@ public class LogScreen implements Screen {
         hardDistance = (int) ((10D / 156D) * (double) hardHeight);
         font.setScale(1.3F * (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
+
     }
 
     @Override

@@ -173,7 +173,7 @@ public class GameScreen implements Screen {
             for (int i = 0; i != players.length; i++) {
                 String player = players[i];
                 String[] playerData = player.split("-");
-                if (player.contains("{start}") || player.contains("{end}") || player.contains("{moves}")) {
+                if (player.contains("{start}") && player.contains("{end}") && player.contains("{moves}")) {
                     data.put(playerData[0], "INCOMPLETE");
                 } else if (!player.contains("{start}") && !player.contains("{end}") && !player.contains("{moves}")) {
                     int start = Integer.valueOf(playerData[1]);
@@ -181,12 +181,9 @@ public class GameScreen implements Screen {
                     int moves = Integer.valueOf(playerData[3]);
 
                     data.put(playerData[0], (end - start) + "|" + moves);
+                } else if (!player.contains("{start}") && player.contains("{end}") && player.contains("{moves}")) {
+                    data.put(playerData[0], "STARTED");
                 }
-            }
-
-            Gdx.app.log("ID", id);
-            for (String name : data.keySet()) {
-                Gdx.app.log(name, data.get(name));
             }
         }
     }
