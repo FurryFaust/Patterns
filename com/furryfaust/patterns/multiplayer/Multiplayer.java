@@ -44,7 +44,13 @@ public class Multiplayer {
     }
 
     public void infoGames(String username, String password, String ids) {
+        temp = "";
 
+        Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
+        request.setUrl(api + "game.php?username=" + username + "&password="
+                + password + "&gameid=" + ids);
+
+        Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
 
     class ResponseListener implements Net.HttpResponseListener {

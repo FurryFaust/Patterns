@@ -23,7 +23,8 @@ public class LevelScreen implements Screen {
             multiplayerHeight, multiplayerX, multiplayerY, loginX,
             loginY, loginWidth, loginHeight, createX, createY,
             createWidth, createHeight, welcomeX, welcomeY, signoutX,
-            signoutY, signoutWidth, signoutHeight;
+            signoutY, signoutWidth, signoutHeight, gamesX, gamesY,
+            gamesWidth, gamesHeight;
     boolean loggedIn, check;
 
     public LevelScreen(Core core) {
@@ -65,10 +66,14 @@ public class LevelScreen implements Screen {
         createHeight = (int) ((double) core.assets.createButton.getHeight() * multiplier * 2.5D);
         createX = Gdx.graphics.getWidth() / 2 + createWidth - (int) ((6D / 21D) * (double) createWidth);
         createY = loginY;
+        gamesWidth = (int) ((double) core.assets.gamesButton.getWidth() * multiplier * 2.5D);
+        gamesHeight = (int) ((double) core.assets.gamesButton.getHeight() * multiplier * 2.5D);
+        gamesX = Gdx.graphics.getWidth() / 2 - (gamesWidth * 2);
+        gamesY = (multiplayerY - multiplayerHeight) - (int) ((double) gamesHeight * .9D);
         signoutWidth = (int) ((double) core.assets.signoutButton.getWidth() * multiplier * 2.5D);
         signoutHeight = (int) ((double) core.assets.signoutButton.getHeight() * multiplier * 2.5D);
-        signoutX = Gdx.graphics.getWidth() / 2 - (signoutWidth * 2);
-        signoutY = (multiplayerY - multiplayerHeight) - (int) ((double) signoutHeight * .8D);
+        signoutX = Gdx.graphics.getWidth() / 2 - (int) ((double) signoutWidth * .75D);
+        signoutY = (multiplayerY - multiplayerHeight) - (int) ((double) signoutHeight * .9D);
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
         core.multiplayer.checkConnection(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
 
@@ -106,6 +111,7 @@ public class LevelScreen implements Screen {
         if (loggedIn && !check) {
             font.draw(batch, "Welcome back, " + core.multiplayer.usernameStore, welcomeX, welcomeY);
             batch.draw(core.assets.signoutButton, signoutX, signoutY, signoutWidth, signoutHeight);
+            batch.draw(core.assets.gamesButton, gamesX, gamesY, gamesWidth, gamesHeight);
         }
 
         batch.end();
@@ -162,6 +168,9 @@ public class LevelScreen implements Screen {
                 }
             }
             if (loggedIn && !check) {
+                if(x > gamesX && x < gamesX + gamesWidth && y > gamesY && y < gamesY + gamesHeight) {
+                    core.setScreen(core.gameScreen);
+                }
                 if (x > signoutX && x < signoutX + signoutWidth && y > signoutY && y < signoutY + signoutHeight) {
                     loggedIn = false;
                     core.multiplayer.usernameStore = "";
