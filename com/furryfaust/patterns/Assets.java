@@ -13,6 +13,9 @@ public class Assets {
     public Texture campaign = new Texture("content/campaign.png");
     public Texture multiplayer = new Texture("content/multiplayer.png");
     public Texture multiplayer2 = new Texture("content/multiplayer2.png");
+    public Texture matchWin = new Texture("content/matchwin.png");
+    public Texture matchLost = new Texture("content/matchlost.png");
+    public Texture matchStand = new Texture("content/matchstand.png");
 
     public Texture board = new Texture("ui/playboard.png");
     public Texture easyHistory = new Texture("ui/easylog.png");

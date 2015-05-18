@@ -186,5 +186,24 @@ public class GameScreen implements Screen {
                 }
             }
         }
+
+        /*
+               ** STATUS KEY **
+               0 - FAILED
+               1 - LOST DUE TO FORFEIT
+               2 - WIN DUE TO FORFEIT
+               3 - TIE DUE TO FORFEIT
+               4 - WIN
+               5 - LOST
+               6 - TIE
+         */
+
+        public int getStatus() {
+            if (System.currentTimeMillis() / 1000 > Integer.valueOf(expiry)) {
+
+            }
+            return 0;
+        }
+
     }
 }
