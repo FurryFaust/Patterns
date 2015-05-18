@@ -189,7 +189,7 @@ public class GameScreen implements Screen {
 
         /*
                ** STATUS KEY **
-               0 - FAILED
+               0 - OTHER
                1 - LOST DUE TO FORFEIT
                2 - WIN DUE TO FORFEIT
                3 - TIE DUE TO FORFEIT
