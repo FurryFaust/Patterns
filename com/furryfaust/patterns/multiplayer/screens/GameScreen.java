@@ -180,7 +180,7 @@ public class GameScreen implements Screen {
                     int end = Integer.valueOf(playerData[2]);
                     int moves = Integer.valueOf(playerData[3]);
 
-                    data.put(playerData[0], (end - start) + "|" + moves);
+                    data.put(playerData[0], ((end - start) / 1000) + "|" + moves);
                 } else if (!player.contains("{start}") && player.contains("{end}") && player.contains("{moves}")) {
                     data.put(playerData[0], "STARTED");
                 }
@@ -199,10 +199,46 @@ public class GameScreen implements Screen {
          */
 
         public int getStatus() {
+            String client = core.multiplayer.usernameStore;
+            String opponent = getOpponent();
+            boolean clientStart = data.get(client).equals("STARTED");
+            boolean clientIncomplete = data.get(client).equals("INCOMPLETE");
+            boolean opponentStart = data.get(opponent).equals("STARTED");
+            boolean opponentIncomplete = data.get(opponent).equals("INCOMPLETE");
             if (System.currentTimeMillis() / 1000 > Integer.valueOf(expiry)) {
+                if ((clientStart || clientIncomplete) && (!opponentStart && !opponentIncomplete)) {
+                    return 1;
+                }
+                if ((!clientStart && !clientIncomplete) && (opponentStart || opponentIncomplete)) {
+                    return 2;
+                }
+                if ((clientStart || clientIncomplete) && (opponentStart || opponentIncomplete)) {
+                    return 3;
+                }
+            }
+            if (!clientStart && !clientIncomplete && !opponentStart && !opponentIncomplete) {
+                String[] clientData = data.get(client).split("\\|");
+                String[] opponentData = data.get(opponent).split("\\|");
+                int clientScore = Integer.valueOf(clientData[0]) * Integer.valueOf(clientData[1]);
+                int opponentScore = Integer.valueOf(opponentData[0]) * Integer.valueOf(opponentData[1]);
 
+                if (clientScore < opponentScore) {
+                    return 4;
+                }
+
+                if (clientScore > opponentScore) {
+                    return 5;
+                }
+
+                if (clientScore == opponentScore) {
+                    return 6;
+                }
             }
             return 0;
+        }
+
+        public String getOpponent() {
+            return data.keySet().toArray(new String[]{})[0] == core.multiplayer.usernameStore ? data.keySet().toArray(new String[]{})[1] : data.keySet().toArray(new String[]{})[0];
         }
 
     }
