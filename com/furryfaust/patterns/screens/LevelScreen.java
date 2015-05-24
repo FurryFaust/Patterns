@@ -90,7 +90,7 @@ public class LevelScreen implements Screen {
                     }
                     check = false;
                 }
-            }, .25F);
+            }, .5F);
         }
     }
 

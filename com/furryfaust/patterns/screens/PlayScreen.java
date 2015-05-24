@@ -159,7 +159,10 @@ public class PlayScreen implements Screen {
                     core.files.data.logData(core.manager.difficulty, date + "|" + core.manager.getTimeElapsed() + "|"
                             + core.manager.movesPerformed);
                 } else {
-                    Gdx.app.log("Moves", core.manager.moves);
+                    core.multiplayer.submitGame(core.multiplayer.usernameStore, core.multiplayer.passwordStore,
+                            String.valueOf(core.manager.matchID), core.manager.moves);
+
+                    core.setScreen(core.gameScreen);
                 }
                 core.manager.countTask.cancel();
 

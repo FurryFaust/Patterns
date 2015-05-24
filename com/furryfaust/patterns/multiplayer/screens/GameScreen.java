@@ -3,11 +3,9 @@ package com.furryfaust.patterns.multiplayer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.Core;
 
@@ -23,14 +21,14 @@ public class GameScreen implements Screen {
     SpriteBatch batch;
     int lostX, lostWidth, lostHeight,
             winX, winWidth, winHeight,
-            standX, standWidth, standHeight;
-    OrthographicCamera camera;
+            standX, standWidth, standHeight,
+            buttonWidth, buttonHeight, buttonX,
+            buttonY;
 
 
     public GameScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override
@@ -46,27 +44,29 @@ public class GameScreen implements Screen {
         standWidth = (int) ((double) core.assets.matchStand.getWidth() * multiplier * 1.3D);
         standHeight = (int) ((double) core.assets.matchStand.getHeight() * multiplier * 1.3D);
         standX = Gdx.graphics.getWidth() / 2 - standWidth / 2;
+        buttonWidth = (int) ((double) core.assets.button.getWidth() * multiplier * 1.5D);
+        buttonHeight = (int) ((double) core.assets.button.getHeight() * multiplier * 1.5D);
+        buttonX = (int) ((double) buttonWidth / 4D);
+        buttonY = Gdx.graphics.getHeight() - (int) ((double) buttonWidth * 1.25D);
 
-        camera.position.set(new Vector2(Gdx.graphics.getWidth() / 2,
-                (Gdx.graphics.getHeight() / 2) + (int) (1.5D * (double) standHeight)), 0);
         Gdx.input.setInputProcessor(new GestureDetector(new InputProcessor()));
     }
 
     @Override
     public void render(float delta) {
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
 
         Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (!gameData.isEmpty()) {
             if (Gdx.input.justTouched()) {
-                Vector3 touch = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+                Vector2 touch = new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
                 for (int i = 0; i != gameData.size(); i++) {
                     if (touch.x > standX && touch.x < standX + standWidth
-                            && touch.y > (Gdx.graphics.getHeight() - (i * (int) ((double) standHeight * 1.05D)))
-                            && touch.y < (Gdx.graphics.getHeight() - (i * (int) ((double) standHeight * 1.05D)))
+                            && touch.y > (Gdx.graphics.getHeight() - (int) (.25D * (double) standHeight)
+                            - ((i + 1) * (int) ((double) standHeight * 1.05D)))
+                            && touch.y < (Gdx.graphics.getHeight() - (int) (.25D * (double) standHeight)
+                            - ((i + 1) * (int) ((double) standHeight * 1.05D)))
                             + standHeight) {
                         if (gameData.get(i).canStart()) {
                             final int id = Integer.valueOf(gameData.get(i).id);
@@ -91,24 +91,29 @@ public class GameScreen implements Screen {
         }
 
         batch.begin();
+        batch.draw(core.assets.button, buttonX, buttonY, buttonWidth, buttonHeight);
         if (!gameData.isEmpty()) {
             for (int i = 0; i != gameData.size(); i++) {
                 Match match = gameData.get(i);
+                Gdx.app.log(match.id, String.valueOf(match.getStatus()));
                 switch (match.getStatus()) {
                     case 1:
                     case 5:
-                        int lostY = Gdx.graphics.getHeight() - (i * (int) ((double) lostHeight * 1.05D));
+                        int lostY = Gdx.graphics.getHeight() - (int) (.25D * (double) lostHeight)
+                                - ((i + 1) * (int) ((double) lostHeight * 1.05D));
                         batch.draw(core.assets.matchLost, lostX, lostY, lostWidth, lostHeight);
                         break;
                     case 2:
                     case 4:
-                        int winY = Gdx.graphics.getHeight() - (i * (int) ((double) winHeight * 1.05D));
+                        int winY = Gdx.graphics.getHeight() - (int) (.25D * (double) winHeight)
+                                - ((i + 1) * (int) ((double) winHeight * 1.05D));
                         batch.draw(core.assets.matchWin, winX, winY, winWidth, winHeight);
                         break;
                     case 3:
                     case 6:
                     case 0:
-                        int standY = Gdx.graphics.getHeight() - (i * (int) ((double) standHeight * 1.05D));
+                        int standY = Gdx.graphics.getHeight() - (int) (.25D * (double) standHeight)
+                                - ((i + 1) * (int) ((double) standHeight * 1.05D));
                         batch.draw(core.assets.matchStand, standX, standY, standWidth, standHeight);
                         break;
                 }
@@ -191,6 +196,13 @@ public class GameScreen implements Screen {
 
         @Override
         public boolean touchDown(float x, float y, int pointer, int button) {
+            y = Gdx.graphics.getHeight() - y;
+            if (x > buttonX && x < buttonX + buttonWidth
+                    && y > buttonY && y < buttonY + buttonHeight) {
+                core.setScreen(core.levelScreen);
+                core.manager.countTask.cancel();
+                return true;
+            }
             return false;
         }
 
