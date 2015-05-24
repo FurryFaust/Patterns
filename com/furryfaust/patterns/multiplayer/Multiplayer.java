@@ -53,6 +53,26 @@ public class Multiplayer {
         Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
 
+    public void startGame(String username, String password, String id) {
+        temp = "";
+
+        Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
+        request.setUrl(api + "startgame.php?username=" + username + "&password="
+                + password + "&gameid=" + id);
+
+        Gdx.net.sendHttpRequest(request, new ResponseListener());
+    }
+
+    public void submitGame(String username, String password, String id, String moves) {
+        temp = "";
+
+        Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
+        request.setUrl(api + "submitgame.php?username=" + username + "&password="
+                + password + "&gameid=" + id + "&moves=" + moves);
+
+        Gdx.net.sendHttpRequest(request, new ResponseListener());
+    }
+
     class ResponseListener implements Net.HttpResponseListener {
 
         @Override

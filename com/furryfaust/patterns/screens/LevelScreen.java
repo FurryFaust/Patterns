@@ -36,6 +36,7 @@ public class LevelScreen implements Screen {
 
     @Override
     public void show() {
+        check = false;
         double multiplier = (double) Gdx.graphics.getWidth() / 330D;
         buttonWidth = (int) ((double) core.assets.button.getWidth() * multiplier * 1.5D);
         buttonHeight = (int) ((double) core.assets.button.getHeight() * multiplier * 1.5D);
@@ -89,7 +90,7 @@ public class LevelScreen implements Screen {
                     }
                     check = false;
                 }
-            }, 1F);
+            }, .25F);
         }
     }
 
@@ -168,7 +169,7 @@ public class LevelScreen implements Screen {
                 }
             }
             if (loggedIn && !check) {
-                if(x > gamesX && x < gamesX + gamesWidth && y > gamesY && y < gamesY + gamesHeight) {
+                if (x > gamesX && x < gamesX + gamesWidth && y > gamesY && y < gamesY + gamesHeight) {
                     core.setScreen(core.gameScreen);
                 }
                 if (x > signoutX && x < signoutX + signoutWidth && y > signoutY && y < signoutY + signoutHeight) {

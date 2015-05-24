@@ -12,21 +12,46 @@ public class Manager {
     public Tasks.countTask countTask;
     public int movesPerformed, timePlayed;
     public int difficulty;
+    public boolean isMultiplayer;
+    public int matchID;
+    public String moves;
 
     public Manager() {
         countTask = new Tasks.countTask(this);
+        winningTiles = new int[4][4];
+        populate(winningTiles);
     }
 
     public void prepare(int size, int difficulty) {
         tiles = new int[size][size];
         populate(tiles);
 
-        winningTiles = new int[size][size];
-        populate(winningTiles);
         scramble(difficulty);
         movesPerformed = 0;
         timePlayed = 0;
         this.difficulty = difficulty;
+        isMultiplayer = false;
+        countTask.cancel();
+        Timer.schedule(countTask, 1F, 1F);
+    }
+
+    public void prepare(String board, int id) {
+        tiles = new int[4][4];
+
+        String[] split = board.split(" ");
+        int counter = 0;
+        for (int i = 0; i != 4; i++) {
+            for (int j = 0; j != 4; j++) {
+                tiles[j][i] = Integer.valueOf(split[counter]);
+                counter++;
+            }
+        }
+
+        moves = "";
+        movesPerformed = 0;
+        timePlayed = 0;
+        isMultiplayer = true;
+        matchID = id;
         countTask.cancel();
         Timer.schedule(countTask, 1F, 1F);
     }
@@ -137,6 +162,9 @@ public class Manager {
                     tiles[(int) emptySlot.x][(int) emptySlot.y + 1] = 0;
                     if (!robot) {
                         movesPerformed++;
+                        if (isMultiplayer) {
+                            moves += ((moves.length() > 0 ? "|" : "") + 0);
+                        }
                     }
                     checkBoard();
                 }
@@ -147,6 +175,9 @@ public class Manager {
                     tiles[(int) emptySlot.x][(int) emptySlot.y - 1] = 0;
                     if (!robot) {
                         movesPerformed++;
+                        if (isMultiplayer) {
+                            moves += ((moves.length() > 0 ? "|" : "") + 1);
+                        }
                     }
                     checkBoard();
                 }
@@ -157,6 +188,9 @@ public class Manager {
                     tiles[(int) emptySlot.x - 1][(int) emptySlot.y] = 0;
                     if (!robot) {
                         movesPerformed++;
+                        if (isMultiplayer) {
+                            moves += ((moves.length() > 0 ? "|" : "") + 2);
+                        }
                     }
                     checkBoard();
                 }
@@ -167,6 +201,9 @@ public class Manager {
                     tiles[(int) emptySlot.x + 1][(int) emptySlot.y] = 0;
                     if (!robot) {
                         movesPerformed++;
+                        if (isMultiplayer) {
+                            moves += ((moves.length() > 0 ? "|" : "") + 3);
+                        }
                     }
                     checkBoard();
                 }

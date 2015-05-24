@@ -152,11 +152,18 @@ public class PlayScreen implements Screen {
                     x > continueX && x < continueX + continueWidth
                     && y > continueY && y < continueY + continueHeight) {
                 core.setScreen(core.levelScreen);
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy h:mm a");
-                String date = dateFormat.format(new Date());
-                core.files.data.logData(core.manager.difficulty, date + "|" + core.manager.getTimeElapsed() + "|"
-                        + core.manager.movesPerformed);
+
+                if (!core.manager.isMultiplayer) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy h:mm a");
+                    String date = dateFormat.format(new Date());
+                    core.files.data.logData(core.manager.difficulty, date + "|" + core.manager.getTimeElapsed() + "|"
+                            + core.manager.movesPerformed);
+                } else {
+                    Gdx.app.log("Moves", core.manager.moves);
+                }
                 core.manager.countTask.cancel();
+
+
                 return true;
             }
             return false;

@@ -3,9 +3,11 @@ package com.furryfaust.patterns.multiplayer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.Core;
 
@@ -15,17 +17,20 @@ import java.util.HashMap;
 public class GameScreen implements Screen {
 
     public Core core;
-    int index = 2;
+    int index = 1;
+    int totalGames;
     ArrayList<Match> gameData;
     SpriteBatch batch;
     int lostX, lostWidth, lostHeight,
             winX, winWidth, winHeight,
             standX, standWidth, standHeight;
+    OrthographicCamera camera;
 
 
     public GameScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override
@@ -42,35 +47,68 @@ public class GameScreen implements Screen {
         standHeight = (int) ((double) core.assets.matchStand.getHeight() * multiplier * 1.3D);
         standX = Gdx.graphics.getWidth() / 2 - standWidth / 2;
 
+        camera.position.set(new Vector2(Gdx.graphics.getWidth() / 2,
+                (Gdx.graphics.getHeight() / 2) + (int) (1.5D * (double) standHeight)), 0);
         Gdx.input.setInputProcessor(new GestureDetector(new InputProcessor()));
     }
 
     @Override
     public void render(float delta) {
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+
         Gdx.graphics.getGL20().glClearColor(237 / 255F, 237 / 255F, 213 / 255F, 1);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (!gameData.isEmpty()) {
+            if (Gdx.input.justTouched()) {
+                Vector3 touch = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+                for (int i = 0; i != gameData.size(); i++) {
+                    if (touch.x > standX && touch.x < standX + standWidth
+                            && touch.y > (Gdx.graphics.getHeight() - (i * (int) ((double) standHeight * 1.05D)))
+                            && touch.y < (Gdx.graphics.getHeight() - (i * (int) ((double) standHeight * 1.05D)))
+                            + standHeight) {
+                        if (gameData.get(i).canStart()) {
+                            final int id = Integer.valueOf(gameData.get(i).id);
+                            core.multiplayer.startGame(core.multiplayer.usernameStore,
+                                    core.multiplayer.passwordStore, gameData.get(i).id);
+
+                            Timer.schedule(new Timer.Task() {
+                                @Override
+                                public void run() {
+                                    String board = core.multiplayer.temp;
+                                    Gdx.app.log("Message", board);
+                                    if (!board.startsWith("false")) {
+                                        core.manager.prepare(board, id);
+                                        core.setScreen(core.playScreen);
+                                    }
+                                }
+                            }, 1F);
+                        }
+                    }
+                }
+            }
+        }
 
         batch.begin();
         if (!gameData.isEmpty()) {
             for (int i = 0; i != gameData.size(); i++) {
                 Match match = gameData.get(i);
-                Gdx.app.log("-", "-");
-                Gdx.app.log("Match Status", String.valueOf(match.getStatus()));
                 switch (match.getStatus()) {
                     case 1:
                     case 5:
-                        int lostY = Gdx.graphics.getHeight() - (i * (int) ((double) lostHeight * 1.5D));
+                        int lostY = Gdx.graphics.getHeight() - (i * (int) ((double) lostHeight * 1.05D));
                         batch.draw(core.assets.matchLost, lostX, lostY, lostWidth, lostHeight);
                         break;
                     case 2:
                     case 4:
-                        int winY = Gdx.graphics.getHeight() - (i * (int) ((double) winHeight * 1.5D));
+                        int winY = Gdx.graphics.getHeight() - (i * (int) ((double) winHeight * 1.05D));
                         batch.draw(core.assets.matchWin, winX, winY, winWidth, winHeight);
                         break;
                     case 3:
                     case 6:
                     case 0:
-                        int standY = Gdx.graphics.getHeight() - (i * (int) ((double) standHeight * 1.5D));
+                        int standY = Gdx.graphics.getHeight() - (i * (int) ((double) standHeight * 1.05D));
                         batch.draw(core.assets.matchStand, standX, standY, standWidth, standHeight);
                         break;
                 }
@@ -88,10 +126,11 @@ public class GameScreen implements Screen {
 
             @Override
             public void run() {
-                String result = core.multiplayer.temp;
+                String result = new StringBuilder(core.multiplayer.temp).reverse().toString();
                 String[] ids = result.split("-");
-                int min = (index - 1) * 5;
-                int max = index * 5;
+                totalGames = ids.length;
+                int min = (index - 1) * 4;
+                int max = index * 4;
                 String idQuery = "";
                 for (; min != max; min++) {
                     if (ids.length - 1 >= min) {
@@ -118,9 +157,9 @@ public class GameScreen implements Screen {
                             }
                         }
                     }
-                }, .25F);
+                }, 1F);
             }
-        }, .25F);
+        }, 1F);
     }
 
     @Override
@@ -268,6 +307,10 @@ public class GameScreen implements Screen {
                 }
             }
             return 0;
+        }
+
+        public boolean canStart() {
+            return data.get(core.multiplayer.usernameStore).equals("INCOMPLETE");
         }
 
         public String getOpponent() {
