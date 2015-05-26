@@ -2,14 +2,17 @@ package com.furryfaust.patterns.multiplayer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
+import com.furryfaust.patterns.Core;
 
 public class Multiplayer {
 
+    Core core;
     public final String api = "http://patterns.furryfaust.com/api/";
     public String usernameStore, passwordStore;
     public String temp;
 
-    public Multiplayer() {
+    public Multiplayer(Core core) {
+        this.core = core;
         usernameStore = passwordStore = temp = "";
     }
 
@@ -19,6 +22,7 @@ public class Multiplayer {
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl(api + "auth.php?username=" + username + "&password="
                 + password);
+        request.setTimeOut(1000);
         Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
 
@@ -28,7 +32,7 @@ public class Multiplayer {
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl(api + "createaccount.php?username=" + username + "&password="
                 + password);
-
+        request.setTimeOut(1000);
 
         Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
@@ -39,6 +43,7 @@ public class Multiplayer {
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl(api + "games.php?username=" + username + "&password="
                 + password);
+        request.setTimeOut(1000);
 
         Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
@@ -49,6 +54,7 @@ public class Multiplayer {
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl(api + "game.php?username=" + username + "&password="
                 + password + "&gameid=" + ids);
+        request.setTimeOut(1000);
 
         Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
@@ -59,6 +65,7 @@ public class Multiplayer {
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl(api + "startgame.php?username=" + username + "&password="
                 + password + "&gameid=" + id);
+        request.setTimeOut(1000);
 
         Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
@@ -69,6 +76,7 @@ public class Multiplayer {
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl(api + "submitgame.php?username=" + username + "&password="
                 + password + "&gameid=" + id + "&moves=" + moves);
+        request.setTimeOut(1000);
 
         Gdx.net.sendHttpRequest(request, new ResponseListener());
     }
@@ -87,7 +95,7 @@ public class Multiplayer {
 
         @Override
         public void cancelled() {
-            temp = "";
+            temp = "false - cancelled";
         }
     }
 

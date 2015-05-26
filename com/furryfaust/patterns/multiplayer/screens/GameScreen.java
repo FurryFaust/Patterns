@@ -3,6 +3,7 @@ package com.furryfaust.patterns.multiplayer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
@@ -19,16 +20,20 @@ public class GameScreen implements Screen {
     int totalGames;
     ArrayList<Match> gameData;
     SpriteBatch batch;
+    BitmapFont font;
     int lostX, lostWidth, lostHeight,
             winX, winWidth, winHeight,
             standX, standWidth, standHeight,
             buttonWidth, buttonHeight, buttonX,
-            buttonY;
+            buttonY, clientX, clientY, opponentX,
+            opponentY;
 
 
     public GameScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
+        font = new BitmapFont(Gdx.files.internal("misc/font.fnt"));
+        font.setScale(2F * (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight());
     }
 
     @Override
@@ -48,6 +53,10 @@ public class GameScreen implements Screen {
         buttonHeight = (int) ((double) core.assets.button.getHeight() * multiplier * 1.5D);
         buttonX = (int) ((double) buttonWidth / 4D);
         buttonY = Gdx.graphics.getHeight() - (int) ((double) buttonWidth * 1.25D);
+        clientX = standX + (int) ((50D / 206D) * (double) standWidth);
+        opponentX = standX + (int) ((157D / 206D) * (double) standWidth);
+        clientY = (int) (60D / 78D * (double) standHeight);
+        opponentY = clientY;
 
         Gdx.input.setInputProcessor(new GestureDetector(new InputProcessor()));
     }
@@ -63,9 +72,9 @@ public class GameScreen implements Screen {
                 Vector2 touch = new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
                 for (int i = 0; i != gameData.size(); i++) {
                     if (touch.x > standX && touch.x < standX + standWidth
-                            && touch.y > (Gdx.graphics.getHeight() - (int) (.25D * (double) standHeight)
+                            && touch.y > (Gdx.graphics.getHeight() - (int) (.30D * (double) standHeight)
                             - ((i + 1) * (int) ((double) standHeight * 1.05D)))
-                            && touch.y < (Gdx.graphics.getHeight() - (int) (.25D * (double) standHeight)
+                            && touch.y < (Gdx.graphics.getHeight() - (int) (.30D * (double) standHeight)
                             - ((i + 1) * (int) ((double) standHeight * 1.05D)))
                             + standHeight) {
                         if (gameData.get(i).canStart()) {
@@ -77,7 +86,6 @@ public class GameScreen implements Screen {
                                 @Override
                                 public void run() {
                                     String board = core.multiplayer.temp;
-                                    Gdx.app.log("Message", board);
                                     if (!board.startsWith("false")) {
                                         core.manager.prepare(board, id);
                                         core.setScreen(core.playScreen);
@@ -95,19 +103,74 @@ public class GameScreen implements Screen {
         if (!gameData.isEmpty()) {
             for (int i = 0; i != gameData.size(); i++) {
                 Match match = gameData.get(i);
-                Gdx.app.log(match.id, String.valueOf(match.getStatus()));
+                String client = core.multiplayer.usernameStore;
+                String opponent = match.getOpponent();
+                int clientOffset = (int) font.getBounds(client).width / 2;
+                int opponentOffset = (int) font.getBounds(opponent).width / 2;
                 switch (match.getStatus()) {
                     case 1:
                     case 5:
-                        int lostY = Gdx.graphics.getHeight() - (int) (.25D * (double) lostHeight)
+                        String clientTimeDisplay = "Time: "
+                                + (Integer.valueOf(match.data.get(client).split("\\|")[0]) / 60) +
+                                ":" + ((Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60) < 9 ? "0" : "")
+                                + Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60;
+                        String clientMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
+                        int clientTimeScoreOffsetX = (int) font.getBounds(clientTimeDisplay).width / 2;
+                        int clientTimeScoreOffsetY = (int) ((double) font.getBounds(clientTimeDisplay).height * 1.5D);
+                        int clientMoveScoreOffsetX = (int) font.getBounds(clientMoveDisplay).width / 2;
+                        int clientMoveScoreOffsetY = (int) ((double) font.getBounds(clientMoveDisplay).height * 1.5D);
+                        String opponentTimeDisplay = "Time: "
+                                + (Integer.valueOf(match.data.get(opponent).split("\\|")[0]) / 60) +
+                                ":" + ((Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60) < 9 ? "0" : "")
+                                + Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60;
+                        String opponentMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
+                        int opponentTimeScoreOffsetX = (int) font.getBounds(opponentTimeDisplay).width / 2;
+                        int opponentTimeScoreOffsetY = (int) ((double) font.getBounds(opponentTimeDisplay).height * 1.5D);
+                        int opponentMoveScoreOffsetX = (int) font.getBounds(opponentMoveDisplay).width / 2;
+                        int opponentMoveScoreOffsetY = (int) ((double) font.getBounds(opponentMoveDisplay).height * 1.5D);
+                        int lostY = Gdx.graphics.getHeight() - (int) (.30D * (double) lostHeight)
                                 - ((i + 1) * (int) ((double) lostHeight * 1.05D));
                         batch.draw(core.assets.matchLost, lostX, lostY, lostWidth, lostHeight);
+                        font.draw(batch, client, clientX - clientOffset, lostY + clientY);
+                        font.draw(batch, clientTimeDisplay, clientX - clientTimeScoreOffsetX, lostY + clientY - clientTimeScoreOffsetY);
+                        font.draw(batch, clientMoveDisplay, clientX - clientMoveScoreOffsetX,
+                                lostY + clientY - clientTimeScoreOffsetY - clientMoveScoreOffsetY);
+                        font.draw(batch, opponent, opponentX - opponentOffset, lostY + opponentY);
+                        font.draw(batch, opponentTimeDisplay, opponentX - opponentTimeScoreOffsetX, lostY + opponentY - opponentTimeScoreOffsetY);
+                        font.draw(batch, opponentMoveDisplay, opponentX - opponentMoveScoreOffsetX,
+                                lostY + opponentY - opponentTimeScoreOffsetY - opponentMoveScoreOffsetY);
                         break;
                     case 2:
                     case 4:
                         int winY = Gdx.graphics.getHeight() - (int) (.25D * (double) winHeight)
                                 - ((i + 1) * (int) ((double) winHeight * 1.05D));
+                        clientTimeDisplay = "Time: "
+                                + (Integer.valueOf(match.data.get(client).split("\\|")[0]) / 60) +
+                                ":" + ((Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60) < 9 ? "0" : "")
+                                + Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60;
+                        clientMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
+                        clientTimeScoreOffsetX = (int) font.getBounds(clientTimeDisplay).width / 2;
+                        clientTimeScoreOffsetY = (int) ((double) font.getBounds(clientTimeDisplay).height * 1.5D);
+                        clientMoveScoreOffsetX = (int) font.getBounds(clientMoveDisplay).width / 2;
+                        clientMoveScoreOffsetY = (int) ((double) font.getBounds(clientMoveDisplay).height * 1.5D);
+                        opponentTimeDisplay = "Time: "
+                                + (Integer.valueOf(match.data.get(opponent).split("\\|")[0]) / 60) +
+                                ":" + ((Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60) < 9 ? "0" : "")
+                                + Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60;
+                        opponentMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
+                        opponentTimeScoreOffsetX = (int) font.getBounds(opponentTimeDisplay).width / 2;
+                        opponentTimeScoreOffsetY = (int) ((double) font.getBounds(opponentTimeDisplay).height * 1.5D);
+                        opponentMoveScoreOffsetX = (int) font.getBounds(opponentMoveDisplay).width / 2;
+                        opponentMoveScoreOffsetY = (int) ((double) font.getBounds(opponentMoveDisplay).height * 1.5D);
                         batch.draw(core.assets.matchWin, winX, winY, winWidth, winHeight);
+                        font.draw(batch, client, clientX - clientOffset, winY + clientY);
+                        font.draw(batch, clientTimeDisplay, clientX - clientTimeScoreOffsetX, winY + clientY - clientTimeScoreOffsetY);
+                        font.draw(batch, clientMoveDisplay, clientX - clientMoveScoreOffsetX,
+                                winY + clientY - clientTimeScoreOffsetY - clientMoveScoreOffsetY);
+                        font.draw(batch, opponent, opponentX - opponentOffset, winY + opponentY);
+                        font.draw(batch, opponentTimeDisplay, opponentX - opponentTimeScoreOffsetX, winY + opponentY - opponentTimeScoreOffsetY);
+                        font.draw(batch, opponentMoveDisplay, opponentX - opponentMoveScoreOffsetX,
+                                winY + opponentY - opponentTimeScoreOffsetY - opponentMoveScoreOffsetY);
                         break;
                     case 3:
                     case 6:
@@ -115,6 +178,8 @@ public class GameScreen implements Screen {
                         int standY = Gdx.graphics.getHeight() - (int) (.25D * (double) standHeight)
                                 - ((i + 1) * (int) ((double) standHeight * 1.05D));
                         batch.draw(core.assets.matchStand, standX, standY, standWidth, standHeight);
+                        font.draw(batch, client, clientX - clientOffset, standY + clientY);
+                        font.draw(batch, opponent, opponentX - opponentOffset, standY + opponentY);
                         break;
                 }
             }
@@ -162,9 +227,9 @@ public class GameScreen implements Screen {
                             }
                         }
                     }
-                }, 1F);
+                }, .5F);
             }
-        }, 1F);
+        }, .5F);
     }
 
     @Override
@@ -266,7 +331,7 @@ public class GameScreen implements Screen {
                     int end = Integer.valueOf(playerData[2]);
                     int moves = Integer.valueOf(playerData[3]);
 
-                    data.put(playerData[0], ((end - start) / 1000) + "|" + moves);
+                    data.put(playerData[0], (end - start) + "|" + moves);
                 } else if (!player.contains("{start}") && player.contains("{end}") && player.contains("{moves}")) {
                     data.put(playerData[0], "STARTED");
                 }
@@ -326,8 +391,14 @@ public class GameScreen implements Screen {
         }
 
         public String getOpponent() {
-            return data.keySet().toArray(new String[]{})[0] == core.multiplayer.usernameStore ?
-                    data.keySet().toArray(new String[]{})[1] : data.keySet().toArray(new String[]{})[0];
+            String[] players = data.keySet().toArray(new String[]{});
+            if (players[0].equals(core.multiplayer.usernameStore)) {
+                return players[1];
+            }
+            if (players[1].equals(core.multiplayer.usernameStore)) {
+                return players[0];
+            }
+            return null;
         }
 
     }

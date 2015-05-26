@@ -23,7 +23,7 @@ public class Core extends Game {
     public void create() {
         assets = new Assets();
         manager = new Manager();
-        multiplayer = new Multiplayer();
+        multiplayer = new Multiplayer(this);
         files = new Files();
         startScreen = new StartScreen(this);
         playScreen = new PlayScreen(this);
