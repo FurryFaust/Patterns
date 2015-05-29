@@ -107,81 +107,64 @@ public class GameScreen implements Screen {
                 String opponent = match.getOpponent();
                 int clientOffset = (int) font.getBounds(client).width / 2;
                 int opponentOffset = (int) font.getBounds(opponent).width / 2;
+                int matchY = Gdx.graphics.getHeight() - (int) (.30D * (double) lostHeight)
+                        - ((i + 1) * (int) ((double) lostHeight * 1.05D));
+                String clientMoveDisplay;
+                String clientTimeDisplay;
+                if (match.data.get(client).contains("|")) {
+                    clientTimeDisplay = "Time: "
+                            + (Integer.valueOf(match.data.get(client).split("\\|")[0]) / 60) +
+                            ":" + ((Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60) < 9 ? "0" : "")
+                            + Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60;
+                    clientMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
+                } else {
+                    clientTimeDisplay = match.canStart() ? "play" : "forfeited";
+                    clientMoveDisplay = "";
+                }
+                int clientTimeScoreOffsetX = (int) font.getBounds(clientTimeDisplay).width / 2;
+                int clientTimeScoreOffsetY = (int) ((double) font.getBounds(clientTimeDisplay).height * 1.5D);
+                int clientMoveScoreOffsetX = (int) font.getBounds(clientMoveDisplay).width / 2;
+                int clientMoveScoreOffsetY = (int) ((double) font.getBounds(clientMoveDisplay).height * 1.5D);
+
+                String opponentMoveDisplay;
+                String opponentTimeDisplay;
+                if (match.data.get(opponent).contains("|")) {
+                    opponentTimeDisplay = "Time: "
+                            + (Integer.valueOf(match.data.get(opponent).split("\\|")[0]) / 60) +
+                            ":" + ((Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60) < 9 ? "0" : "")
+                            + Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60;
+                    opponentMoveDisplay = "Moves: " + match.data.get(opponent).split("\\|")[1];
+                } else {
+                    opponentTimeDisplay = "waiting";
+                    opponentMoveDisplay = "";
+                }
+                int opponentTimeScoreOffsetX = (int) font.getBounds(opponentTimeDisplay).width / 2;
+                int opponentTimeScoreOffsetY = (int) ((double) font.getBounds(opponentTimeDisplay).height * 1.5D);
+                int opponentMoveScoreOffsetX = (int) font.getBounds(opponentMoveDisplay).width / 2;
+                int opponentMoveScoreOffsetY = (int) ((double) font.getBounds(opponentMoveDisplay).height * 1.5D);
                 switch (match.getStatus()) {
                     case 1:
                     case 5:
-                        String clientTimeDisplay = "Time: "
-                                + (Integer.valueOf(match.data.get(client).split("\\|")[0]) / 60) +
-                                ":" + ((Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60) < 9 ? "0" : "")
-                                + Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60;
-                        String clientMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
-                        int clientTimeScoreOffsetX = (int) font.getBounds(clientTimeDisplay).width / 2;
-                        int clientTimeScoreOffsetY = (int) ((double) font.getBounds(clientTimeDisplay).height * 1.5D);
-                        int clientMoveScoreOffsetX = (int) font.getBounds(clientMoveDisplay).width / 2;
-                        int clientMoveScoreOffsetY = (int) ((double) font.getBounds(clientMoveDisplay).height * 1.5D);
-                        String opponentTimeDisplay = "Time: "
-                                + (Integer.valueOf(match.data.get(opponent).split("\\|")[0]) / 60) +
-                                ":" + ((Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60) < 9 ? "0" : "")
-                                + Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60;
-                        String opponentMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
-                        int opponentTimeScoreOffsetX = (int) font.getBounds(opponentTimeDisplay).width / 2;
-                        int opponentTimeScoreOffsetY = (int) ((double) font.getBounds(opponentTimeDisplay).height * 1.5D);
-                        int opponentMoveScoreOffsetX = (int) font.getBounds(opponentMoveDisplay).width / 2;
-                        int opponentMoveScoreOffsetY = (int) ((double) font.getBounds(opponentMoveDisplay).height * 1.5D);
-                        int lostY = Gdx.graphics.getHeight() - (int) (.30D * (double) lostHeight)
-                                - ((i + 1) * (int) ((double) lostHeight * 1.05D));
-                        batch.draw(core.assets.matchLost, lostX, lostY, lostWidth, lostHeight);
-                        font.draw(batch, client, clientX - clientOffset, lostY + clientY);
-                        font.draw(batch, clientTimeDisplay, clientX - clientTimeScoreOffsetX, lostY + clientY - clientTimeScoreOffsetY);
-                        font.draw(batch, clientMoveDisplay, clientX - clientMoveScoreOffsetX,
-                                lostY + clientY - clientTimeScoreOffsetY - clientMoveScoreOffsetY);
-                        font.draw(batch, opponent, opponentX - opponentOffset, lostY + opponentY);
-                        font.draw(batch, opponentTimeDisplay, opponentX - opponentTimeScoreOffsetX, lostY + opponentY - opponentTimeScoreOffsetY);
-                        font.draw(batch, opponentMoveDisplay, opponentX - opponentMoveScoreOffsetX,
-                                lostY + opponentY - opponentTimeScoreOffsetY - opponentMoveScoreOffsetY);
+                        batch.draw(core.assets.matchLost, lostX, matchY, lostWidth, lostHeight);
                         break;
                     case 2:
                     case 4:
-                        int winY = Gdx.graphics.getHeight() - (int) (.25D * (double) winHeight)
-                                - ((i + 1) * (int) ((double) winHeight * 1.05D));
-                        clientTimeDisplay = "Time: "
-                                + (Integer.valueOf(match.data.get(client).split("\\|")[0]) / 60) +
-                                ":" + ((Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60) < 9 ? "0" : "")
-                                + Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60;
-                        clientMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
-                        clientTimeScoreOffsetX = (int) font.getBounds(clientTimeDisplay).width / 2;
-                        clientTimeScoreOffsetY = (int) ((double) font.getBounds(clientTimeDisplay).height * 1.5D);
-                        clientMoveScoreOffsetX = (int) font.getBounds(clientMoveDisplay).width / 2;
-                        clientMoveScoreOffsetY = (int) ((double) font.getBounds(clientMoveDisplay).height * 1.5D);
-                        opponentTimeDisplay = "Time: "
-                                + (Integer.valueOf(match.data.get(opponent).split("\\|")[0]) / 60) +
-                                ":" + ((Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60) < 9 ? "0" : "")
-                                + Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60;
-                        opponentMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
-                        opponentTimeScoreOffsetX = (int) font.getBounds(opponentTimeDisplay).width / 2;
-                        opponentTimeScoreOffsetY = (int) ((double) font.getBounds(opponentTimeDisplay).height * 1.5D);
-                        opponentMoveScoreOffsetX = (int) font.getBounds(opponentMoveDisplay).width / 2;
-                        opponentMoveScoreOffsetY = (int) ((double) font.getBounds(opponentMoveDisplay).height * 1.5D);
-                        batch.draw(core.assets.matchWin, winX, winY, winWidth, winHeight);
-                        font.draw(batch, client, clientX - clientOffset, winY + clientY);
-                        font.draw(batch, clientTimeDisplay, clientX - clientTimeScoreOffsetX, winY + clientY - clientTimeScoreOffsetY);
-                        font.draw(batch, clientMoveDisplay, clientX - clientMoveScoreOffsetX,
-                                winY + clientY - clientTimeScoreOffsetY - clientMoveScoreOffsetY);
-                        font.draw(batch, opponent, opponentX - opponentOffset, winY + opponentY);
-                        font.draw(batch, opponentTimeDisplay, opponentX - opponentTimeScoreOffsetX, winY + opponentY - opponentTimeScoreOffsetY);
-                        font.draw(batch, opponentMoveDisplay, opponentX - opponentMoveScoreOffsetX,
-                                winY + opponentY - opponentTimeScoreOffsetY - opponentMoveScoreOffsetY);
+                        batch.draw(core.assets.matchWin, winX, matchY, winWidth, winHeight);
                         break;
+                    case 0:
                     case 3:
                     case 6:
-                    case 0:
-                        int standY = Gdx.graphics.getHeight() - (int) (.25D * (double) standHeight)
-                                - ((i + 1) * (int) ((double) standHeight * 1.05D));
-                        batch.draw(core.assets.matchStand, standX, standY, standWidth, standHeight);
-                        font.draw(batch, client, clientX - clientOffset, standY + clientY);
-                        font.draw(batch, opponent, opponentX - opponentOffset, standY + opponentY);
+                        batch.draw(core.assets.matchStand, standX, matchY, standWidth, standHeight);
                         break;
                 }
+                font.draw(batch, client, clientX - clientOffset, matchY + clientY);
+                font.draw(batch, opponent, opponentX - opponentOffset, matchY + opponentY);
+                font.draw(batch, clientTimeDisplay, clientX - clientTimeScoreOffsetX, matchY + clientY - clientTimeScoreOffsetY);
+                font.draw(batch, clientMoveDisplay, clientX - clientMoveScoreOffsetX,
+                        matchY + clientY - clientTimeScoreOffsetY - clientMoveScoreOffsetY);
+                font.draw(batch, opponentTimeDisplay, opponentX - opponentTimeScoreOffsetX, matchY + opponentY - opponentTimeScoreOffsetY);
+                font.draw(batch, opponentMoveDisplay, opponentX - opponentMoveScoreOffsetX,
+                        matchY + opponentY - opponentTimeScoreOffsetY - opponentMoveScoreOffsetY);
             }
         }
         batch.end();
@@ -387,7 +370,7 @@ public class GameScreen implements Screen {
         }
 
         public boolean canStart() {
-            return data.get(core.multiplayer.usernameStore).equals("INCOMPLETE");
+            return data.get(core.multiplayer.usernameStore).equals("INCOMPLETE") && Integer.valueOf(expiry) > System.currentTimeMillis() / 1000;
         }
 
         public String getOpponent() {
