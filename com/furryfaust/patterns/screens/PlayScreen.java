@@ -162,7 +162,7 @@ public class PlayScreen implements Screen {
                     core.multiplayer.submitGame(core.multiplayer.usernameStore, core.multiplayer.passwordStore,
                             String.valueOf(core.manager.matchID), core.manager.moves);
 
-                    core.setScreen(core.gameScreen);
+                    core.setScreen(core.levelScreen);
                 }
                 core.manager.countTask.cancel();
 

@@ -26,7 +26,9 @@ public class GameScreen implements Screen {
             standX, standWidth, standHeight,
             buttonWidth, buttonHeight, buttonX,
             buttonY, clientX, clientY, opponentX,
-            opponentY;
+            opponentY, prevX, prevY, prevWidth,
+            prevHeight, nextX, nextY, nextWidth,
+            nextHeight;
 
 
     public GameScreen(Core core) {
@@ -39,6 +41,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         refreshData();
+        index = 1;
         double multiplier = (double) Gdx.graphics.getWidth() / 330D;
         lostWidth = (int) ((double) core.assets.matchLost.getWidth() * multiplier * 1.3D);
         lostHeight = (int) ((double) core.assets.matchLost.getHeight() * multiplier * 1.3D);
@@ -57,6 +60,14 @@ public class GameScreen implements Screen {
         opponentX = standX + (int) ((157D / 206D) * (double) standWidth);
         clientY = (int) (60D / 78D * (double) standHeight);
         opponentY = clientY;
+        prevWidth = (int) ((double) core.assets.prevButton.getWidth() * multiplier * 1.5D);
+        prevHeight = (int) ((double) core.assets.prevButton.getHeight() * multiplier * 1.5D);
+        prevX = Gdx.graphics.getWidth() - (prevWidth * 2) - (int) ((double) prevWidth * .25D);
+        prevY = (int) (.25D * (double) prevHeight);
+        nextWidth = (int) ((double) core.assets.nextButton.getWidth() * multiplier * 1.5D);
+        nextHeight = (int) ((double) core.assets.nextButton.getHeight() * multiplier * 1.5D);
+        nextX = Gdx.graphics.getWidth() - nextWidth - (int) ((double) nextWidth * .25D);
+        nextY = prevY;
 
         Gdx.input.setInputProcessor(new GestureDetector(new InputProcessor()));
     }
@@ -99,6 +110,8 @@ public class GameScreen implements Screen {
         }
 
         batch.begin();
+        batch.draw(core.assets.prevButton, prevX, prevY, prevWidth, prevHeight);
+        batch.draw(core.assets.nextButton, nextX, nextY, nextWidth, nextHeight);
         batch.draw(core.assets.button, buttonX, buttonY, buttonWidth, buttonHeight);
         if (!gameData.isEmpty()) {
             for (int i = 0; i != gameData.size(); i++) {
@@ -135,7 +148,7 @@ public class GameScreen implements Screen {
                             + Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60;
                     opponentMoveDisplay = "Moves: " + match.data.get(opponent).split("\\|")[1];
                 } else {
-                    opponentTimeDisplay = "waiting";
+                    opponentTimeDisplay = match.hasExpired() ? "forfeited" : "waiting";
                     opponentMoveDisplay = "";
                 }
                 int opponentTimeScoreOffsetX = (int) font.getBounds(opponentTimeDisplay).width / 2;
@@ -203,16 +216,19 @@ public class GameScreen implements Screen {
                     @Override
                     public void run() {
                         String result = core.multiplayer.temp;
-                        if (!result.startsWith("false")) {
+                        if (!result.startsWith("false") && !result.equals("")) {
                             String[] data = result.split("<br>");
                             for (int i = 0; i != data.length; i++) {
+                                System.out.println(data[i]);
                                 gameData.add(new Match(data[i]));
                             }
+                        } else {
+                            refreshData();
                         }
                     }
-                }, .5F);
+                }, .75F);
             }
-        }, .5F);
+        }, .75F);
     }
 
     @Override
@@ -250,6 +266,14 @@ public class GameScreen implements Screen {
                 core.setScreen(core.levelScreen);
                 core.manager.countTask.cancel();
                 return true;
+            }
+            if (x > prevX && x < prevX + prevWidth && y > prevY && y < prevY + prevHeight) {
+                index = index != 1 ? index - 1 : index;
+                refreshData();
+            }
+            if (x > nextX && x < nextX + nextWidth && y > nextY && y < nextY + nextHeight) {
+                index = index * 4 < totalGames ? index + 1 : index;
+                refreshData();
             }
             return false;
         }
@@ -370,7 +394,11 @@ public class GameScreen implements Screen {
         }
 
         public boolean canStart() {
-            return data.get(core.multiplayer.usernameStore).equals("INCOMPLETE") && Integer.valueOf(expiry) > System.currentTimeMillis() / 1000;
+            return data.get(core.multiplayer.usernameStore).equals("INCOMPLETE") && !hasExpired();
+        }
+
+        public boolean hasExpired() {
+            return Integer.valueOf(expiry) < System.currentTimeMillis() / 1000;
         }
 
         public String getOpponent() {
