@@ -183,6 +183,9 @@ public class LevelScreen implements Screen {
                     core.multiplayer.usernameStore = "";
                     core.multiplayer.passwordStore = "";
                 }
+                if (x > inviteX && x < inviteX + inviteWidth && y > inviteY && y < inviteY + inviteHeight) {
+                    core.setScreen(core.inviteScreen);
+                }
             }
             return false;
         }

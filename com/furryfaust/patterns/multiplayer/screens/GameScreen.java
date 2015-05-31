@@ -29,7 +29,7 @@ public class GameScreen implements Screen {
             opponentY, prevX, prevY, prevWidth,
             prevHeight, nextX, nextY, nextWidth,
             nextHeight;
-
+    boolean check;
 
     public GameScreen(Core core) {
         this.core = core;
@@ -40,6 +40,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
+        check = false;
         refreshData();
         index = 1;
         double multiplier = (double) Gdx.graphics.getWidth() / 330D;
@@ -185,50 +186,54 @@ public class GameScreen implements Screen {
     }
 
     public void refreshData() {
-        gameData = new ArrayList<Match>();
+        if (!check) {
+            check = true;
+            gameData = new ArrayList<Match>();
 
-        core.multiplayer.requestGames(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
-        Timer.schedule(new Timer.Task() {
+            core.multiplayer.requestGames(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
+            Timer.schedule(new Timer.Task() {
 
-            @Override
-            public void run() {
-                String result = new StringBuilder(core.multiplayer.temp).reverse().toString();
-                String[] ids = result.split("-");
-                totalGames = ids.length;
-                int min = (index - 1) * 4;
-                int max = index * 4;
-                String idQuery = "";
-                for (; min != max; min++) {
-                    if (ids.length - 1 >= min) {
-                        idQuery += ids[min] + (min != max ? "," : "");
-                    }
-                }
-
-                if (idQuery.charAt(idQuery.length() - 1) == ',') {
-                    idQuery = idQuery.substring(0, idQuery.length() - 1);
-                }
-
-                core.multiplayer.infoGames(core.multiplayer.usernameStore, core.multiplayer.passwordStore,
-                        idQuery);
-
-                Timer.schedule(new Timer.Task() {
-
-                    @Override
-                    public void run() {
-                        String result = core.multiplayer.temp;
-                        if (!result.startsWith("false") && !result.equals("")) {
-                            String[] data = result.split("<br>");
-                            for (int i = 0; i != data.length; i++) {
-                                System.out.println(data[i]);
-                                gameData.add(new Match(data[i]));
-                            }
-                        } else {
-                            refreshData();
+                @Override
+                public void run() {
+                    String result = new StringBuilder(core.multiplayer.temp).reverse().toString();
+                    String[] ids = result.split("-");
+                    totalGames = ids.length;
+                    int min = (index - 1) * 4;
+                    int max = index * 4;
+                    String idQuery = "";
+                    for (; min != max; min++) {
+                        if (ids.length - 1 >= min) {
+                            idQuery += ids[min] + (min != max ? "," : "");
                         }
                     }
-                }, .75F);
-            }
-        }, .75F);
+
+                    if (idQuery.charAt(idQuery.length() - 1) == ',') {
+                        idQuery = idQuery.substring(0, idQuery.length() - 1);
+                    }
+
+                    core.multiplayer.infoGames(core.multiplayer.usernameStore, core.multiplayer.passwordStore,
+                            idQuery);
+
+                    Timer.schedule(new Timer.Task() {
+
+                        @Override
+                        public void run() {
+                            String result = core.multiplayer.temp;
+                            check = false;
+                            if (!result.startsWith("false") && !result.equals("")) {
+                                String[] data = result.split("<br>");
+                                for (int i = 0; i != data.length; i++) {
+                                    System.out.println(data[i]);
+                                    gameData.add(new Match(data[i]));
+                                }
+                            } else {
+                                refreshData();
+                            }
+                        }
+                    }, .75F);
+                }
+            }, .75F);
+        }
     }
 
     @Override

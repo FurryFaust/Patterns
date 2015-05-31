@@ -21,6 +21,7 @@ public class Assets {
     public Texture easyHistory = new Texture("ui/easylog.png");
     public Texture hardHistory = new Texture("ui/hardlog.png");
     public Texture score = new Texture("ui/scoreboard.png");
+    public Texture selectdif = new Texture("ui/selectdif.png");
 
     public Texture logo = new Texture("art/isolatedlogo.png");
     public Texture trophy = new Texture("art/trophy.png");
