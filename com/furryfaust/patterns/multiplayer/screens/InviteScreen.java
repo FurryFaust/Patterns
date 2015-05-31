@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.furryfaust.patterns.Core;
 
@@ -12,22 +13,26 @@ public class InviteScreen implements Screen {
     Core core;
     SpriteBatch batch;
     String tempInviteStore;
+    BitmapFont font;
     int difficulty, focus;
     int buttonWidth, buttonHeight, buttonX,
             buttonY, easyX, easyY, easyWidth, easyHeight,
             hardX, hardY, hardWidth, hardHeight, selectWidth,
-            selectHeight;
+            selectHeight, inviteInputWidth, inviteInputHeight,
+            inviteInputX, inviteInputY, invitedX, invitedY;
 
     public InviteScreen(Core core) {
         this.core = core;
         batch = new SpriteBatch();
+        font = new BitmapFont(Gdx.files.internal("misc/font.fnt"));
+        font.setScale(2F * (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight());
     }
 
     @Override
     public void show() {
         tempInviteStore = "";
         difficulty = 0;
-
+        focus = 1;
         double multiplier = (double) Gdx.graphics.getWidth() / 330D;
         buttonWidth = (int) ((double) core.assets.button.getWidth() * multiplier * 1.5D);
         buttonHeight = (int) ((double) core.assets.button.getHeight() * multiplier * 1.5D);
@@ -45,6 +50,12 @@ public class InviteScreen implements Screen {
         hardY = Gdx.graphics.getHeight() / 2 - (hardHeight / 2);
         selectWidth = (int) ((double) core.assets.selectdif.getWidth() * multiplier * 2.5D);
         selectHeight = (int) ((double) core.assets.selectdif.getHeight() * multiplier * 2.5D);
+        inviteInputWidth = (int) ((double) core.assets.textInput.getWidth() * multiplier * 5D);
+        inviteInputHeight = (int) ((double) core.assets.textInput.getHeight() * multiplier * 3.5D);
+        inviteInputX = Gdx.graphics.getWidth() / 2 - inviteInputWidth / 2;
+        inviteInputY = Gdx.graphics.getHeight() / 2 + (2 * inviteInputHeight);
+        invitedX = inviteInputX + (int) ((double) inviteInputWidth * (1D / 50D));
+        invitedY = inviteInputY + (int) ((double) inviteInputHeight * (9D / 18D));
         Gdx.input.setInputProcessor(new InputManager());
     }
 
@@ -64,6 +75,9 @@ public class InviteScreen implements Screen {
         batch.draw(core.assets.easyButton, easyX, easyY, easyWidth, easyHeight);
         batch.draw(core.assets.hardButton, hardX, hardY, hardWidth, hardHeight);
         batch.draw(core.assets.button, buttonX, buttonY, buttonWidth, buttonHeight);
+        batch.draw(core.assets.textInput, inviteInputX, inviteInputY, inviteInputWidth, inviteInputHeight);
+
+        font.draw(batch, tempInviteStore, invitedX, invitedY);
         batch.end();
     }
 
@@ -82,6 +96,13 @@ public class InviteScreen implements Screen {
         if (x > hardX && x < hardX + hardWidth && y > hardY && y < hardY + hardHeight) {
             difficulty = 1;
         }
+        if (x > inviteInputX && x < inviteInputX + inviteInputWidth && y > inviteInputY && y < inviteInputY + inviteInputHeight) {
+            focus = 0;
+            Gdx.input.setOnscreenKeyboardVisible(true);
+            return;
+        }
+        focus = 1;
+        Gdx.input.setOnscreenKeyboardVisible(false);
     }
 
     @Override
