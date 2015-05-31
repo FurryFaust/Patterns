@@ -24,7 +24,8 @@ public class LevelScreen implements Screen {
             loginY, loginWidth, loginHeight, createX, createY,
             createWidth, createHeight, welcomeX, welcomeY, signoutX,
             signoutY, signoutWidth, signoutHeight, gamesX, gamesY,
-            gamesWidth, gamesHeight;
+            gamesWidth, gamesHeight, inviteX, inviteY, inviteWidth,
+            inviteHeight;
     boolean loggedIn, check;
 
     public LevelScreen(Core core) {
@@ -71,9 +72,13 @@ public class LevelScreen implements Screen {
         gamesHeight = (int) ((double) core.assets.gamesButton.getHeight() * multiplier * 2.5D);
         gamesX = Gdx.graphics.getWidth() / 2 - (gamesWidth * 2);
         gamesY = (multiplayerY - multiplayerHeight) - (int) ((double) gamesHeight * .9D);
+        inviteWidth = (int) ((double) core.assets.inviteButton.getWidth() * multiplier * 2.5D);
+        inviteHeight = (int) ((double) core.assets.inviteButton.getHeight() * multiplier * 2.5D);
+        inviteX = Gdx.graphics.getWidth() / 2 - (int) ((double) inviteWidth * .75D);
+        inviteY = (multiplayerY - multiplayerHeight) - (int) ((double) inviteHeight * .9D);
         signoutWidth = (int) ((double) core.assets.signoutButton.getWidth() * multiplier * 2.5D);
         signoutHeight = (int) ((double) core.assets.signoutButton.getHeight() * multiplier * 2.5D);
-        signoutX = Gdx.graphics.getWidth() / 2 - (int) ((double) signoutWidth * .75D);
+        signoutX = Gdx.graphics.getWidth() / 2 + (int) ((double) signoutWidth * .6D);
         signoutY = (multiplayerY - multiplayerHeight) - (int) ((double) signoutHeight * .9D);
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
         core.multiplayer.checkConnection(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
@@ -111,6 +116,7 @@ public class LevelScreen implements Screen {
         }
         if (loggedIn && !check) {
             font.draw(batch, "Welcome back, " + core.multiplayer.usernameStore, welcomeX, welcomeY);
+            batch.draw(core.assets.inviteButton, inviteX, inviteY, inviteWidth, inviteHeight);
             batch.draw(core.assets.signoutButton, signoutX, signoutY, signoutWidth, signoutHeight);
             batch.draw(core.assets.gamesButton, gamesX, gamesY, gamesWidth, gamesHeight);
         }
