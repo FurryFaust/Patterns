@@ -6,20 +6,22 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.Core;
 
 public class InviteScreen implements Screen {
 
     Core core;
     SpriteBatch batch;
-    String tempInviteStore;
+    String tempInviteStore, errorMessage;
     BitmapFont font;
     int difficulty, focus;
     int buttonWidth, buttonHeight, buttonX,
             buttonY, easyX, easyY, easyWidth, easyHeight,
             hardX, hardY, hardWidth, hardHeight, selectWidth,
             selectHeight, inviteInputWidth, inviteInputHeight,
-            inviteInputX, inviteInputY, invitedX, invitedY;
+            inviteInputX, inviteInputY, invitedX, invitedY,
+            inviteX, inviteY, inviteWidth, inviteHeight;
 
     public InviteScreen(Core core) {
         this.core = core;
@@ -56,6 +58,10 @@ public class InviteScreen implements Screen {
         inviteInputY = Gdx.graphics.getHeight() / 2 + (2 * inviteInputHeight);
         invitedX = inviteInputX + (int) ((double) inviteInputWidth * (1D / 50D));
         invitedY = inviteInputY + (int) ((double) inviteInputHeight * (9D / 18D));
+        inviteWidth = (int) ((double) core.assets.invite2Button.getWidth() * multiplier * 3.3D);
+        inviteHeight = (int) ((double) core.assets.invite2Button.getHeight() * multiplier * 3.3D);
+        inviteX = Gdx.graphics.getWidth() / 2 - inviteWidth / 2;
+        inviteY = Gdx.graphics.getHeight() / 2 - (3 * inviteHeight);
         Gdx.input.setInputProcessor(new InputManager());
     }
 
@@ -76,7 +82,7 @@ public class InviteScreen implements Screen {
         batch.draw(core.assets.hardButton, hardX, hardY, hardWidth, hardHeight);
         batch.draw(core.assets.button, buttonX, buttonY, buttonWidth, buttonHeight);
         batch.draw(core.assets.textInput, inviteInputX, inviteInputY, inviteInputWidth, inviteInputHeight);
-
+        batch.draw(core.assets.invite2Button, inviteX, inviteY, inviteWidth, inviteHeight);
         font.draw(batch, tempInviteStore, invitedX, invitedY);
         batch.end();
     }
@@ -85,24 +91,48 @@ public class InviteScreen implements Screen {
         int x = Gdx.input.getX();
         int y = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-        if (x > buttonX && x < buttonX + buttonWidth && y > buttonY && y < buttonY + buttonHeight) {
-            core.setScreen(core.levelScreen);
-        }
+        if (Gdx.input.justTouched()) {
+            if (x > buttonX && x < buttonX + buttonWidth && y > buttonY && y < buttonY + buttonHeight) {
+                core.setScreen(core.levelScreen);
+            }
 
-        if (x > easyX && x < easyX + easyWidth && y > easyY && y < easyY + easyHeight) {
-            difficulty = 0;
-        }
+            if (x > easyX && x < easyX + easyWidth && y > easyY && y < easyY + easyHeight) {
+                difficulty = 0;
+            }
 
-        if (x > hardX && x < hardX + hardWidth && y > hardY && y < hardY + hardHeight) {
-            difficulty = 1;
+            if (x > hardX && x < hardX + hardWidth && y > hardY && y < hardY + hardHeight) {
+                difficulty = 1;
+            }
+            if (x > inviteX && x < inviteX + inviteWidth && y > inviteY && y < inviteY + inviteHeight) {
+                core.multiplayer.requestNewGame(core.multiplayer.usernameStore, core.multiplayer.passwordStore, tempInviteStore,
+                        String.valueOf(difficulty));
+
+                Timer.schedule(new Timer.Task() {
+
+                    @Override
+                    public void run() {
+                        String response = core.multiplayer.temp;
+                        if (!response.startsWith("false")) {
+                            System.out.println(response);
+                            String id = response.split("\\|")[0];
+                            String board = response.split("\\|")[1];
+                            core.manager.prepare(board, Integer.valueOf(id));
+                            core.setScreen(core.playScreen);
+                        } else {
+                            errorMessage = response;
+                        }
+                    }
+
+                }, 1F);
+            }
+            if (x > inviteInputX && x < inviteInputX + inviteInputWidth && y > inviteInputY && y < inviteInputY + inviteInputHeight) {
+                focus = 0;
+                Gdx.input.setOnscreenKeyboardVisible(true);
+                return;
+            }
+            focus = 1;
+            Gdx.input.setOnscreenKeyboardVisible(false);
         }
-        if (x > inviteInputX && x < inviteInputX + inviteInputWidth && y > inviteInputY && y < inviteInputY + inviteInputHeight) {
-            focus = 0;
-            Gdx.input.setOnscreenKeyboardVisible(true);
-            return;
-        }
-        focus = 1;
-        Gdx.input.setOnscreenKeyboardVisible(false);
     }
 
     @Override

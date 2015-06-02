@@ -128,7 +128,7 @@ public class GameScreen implements Screen {
                 if (match.data.get(client).contains("|")) {
                     clientTimeDisplay = "Time: "
                             + (Integer.valueOf(match.data.get(client).split("\\|")[0]) / 60) +
-                            ":" + ((Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60) < 9 ? "0" : "")
+                            ":" + ((Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60) < 10 ? "0" : "")
                             + Integer.valueOf(match.data.get(client).split("\\|")[0]) % 60;
                     clientMoveDisplay = "Moves: " + match.data.get(client).split("\\|")[1];
                 } else {
@@ -145,7 +145,7 @@ public class GameScreen implements Screen {
                 if (match.data.get(opponent).contains("|")) {
                     opponentTimeDisplay = "Time: "
                             + (Integer.valueOf(match.data.get(opponent).split("\\|")[0]) / 60) +
-                            ":" + ((Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60) < 9 ? "0" : "")
+                            ":" + ((Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60) < 10 ? "0" : "")
                             + Integer.valueOf(match.data.get(opponent).split("\\|")[0]) % 60;
                     opponentMoveDisplay = "Moves: " + match.data.get(opponent).split("\\|")[1];
                 } else {
@@ -219,15 +219,13 @@ public class GameScreen implements Screen {
                         @Override
                         public void run() {
                             String result = core.multiplayer.temp;
+                            System.out.println(result);
                             check = false;
                             if (!result.startsWith("false") && !result.equals("")) {
                                 String[] data = result.split("<br>");
                                 for (int i = 0; i != data.length; i++) {
-                                    System.out.println(data[i]);
                                     gameData.add(new Match(data[i]));
                                 }
-                            } else {
-                                refreshData();
                             }
                         }
                     }, .75F);

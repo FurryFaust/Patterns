@@ -43,6 +43,7 @@ public class Assets {
     public Texture inviteButton = new Texture("input/buttons/invite.png");
     public Texture prevButton = new Texture("input/buttons/prev.png");
     public Texture nextButton = new Texture("input/buttons/next.png");
+    public Texture invite2Button = new Texture("input/buttons/invite2.png");
 
     public Texture textInput = new Texture("input/textinput.png");
 
