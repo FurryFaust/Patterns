@@ -20,8 +20,7 @@ public class LevelScreen implements Screen {
     BitmapFont font;
     int buttonWidth, buttonHeight, buttonX,
             buttonY, randomX, randomY, randomWidth,
-            randomHeight, campaignX, campaignY, campaignWidth,
-            campaignHeight, easyX, easyY, easyWidth, easyHeight,
+            randomHeight, easyX, easyY, easyWidth, easyHeight,
             hardX, hardY, hardWidth, hardHeight, multiplayerWidth,
             multiplayerHeight, multiplayerX, multiplayerY, loginX,
             loginY, loginWidth, loginHeight, createX, createY,
@@ -105,6 +104,11 @@ public class LevelScreen implements Screen {
                 }
             }, 1F, 1F);
         }
+
+        if (loggedIn) {
+            welcomeX = Gdx.graphics.getWidth() / 2 -
+                    (int) font.getBounds("Welcome back," + core.multiplayer.usernameStore).width / 2;
+        }
     }
 
     @Override
@@ -139,7 +143,6 @@ public class LevelScreen implements Screen {
 
     @Override
     public void pause() {
-
     }
 
     @Override
@@ -149,12 +152,13 @@ public class LevelScreen implements Screen {
 
     @Override
     public void hide() {
-
+        if (connection != null && connection.isScheduled()) {
+            connection.cancel();
+        }
     }
 
     @Override
     public void dispose() {
-
     }
 
     class InputHandler implements GestureDetector.GestureListener {

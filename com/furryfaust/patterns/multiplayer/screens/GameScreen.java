@@ -29,7 +29,7 @@ public class GameScreen implements Screen {
             opponentY, prevX, prevY, prevWidth,
             prevHeight, nextX, nextY, nextWidth,
             nextHeight;
-    boolean check;
+    Timer.Task idsQuery, gameQuery;
 
     public GameScreen(Core core) {
         this.core = core;
@@ -40,7 +40,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        check = false;
         refreshData();
         index = 1;
         double multiplier = (double) Gdx.graphics.getWidth() / 330D;
@@ -186,17 +185,16 @@ public class GameScreen implements Screen {
     }
 
     public void refreshData() {
-        if (!check) {
-            check = true;
-            if (gameData == null) {
-                gameData = new ArrayList<Match>();
-            }
+        if (gameData == null) {
+            gameData = new ArrayList<Match>();
+        }
 
-            core.multiplayer.requestGames(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
-            Timer.schedule(new Timer.Task() {
+        core.multiplayer.requestGames(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
+        idsQuery = Timer.schedule(new Timer.Task() {
 
-                @Override
-                public void run() {
+            @Override
+            public void run() {
+                if (core.multiplayer.temp != "") {
                     String result = new StringBuilder(core.multiplayer.temp).reverse().toString();
                     String[] ids = result.split("-");
                     totalGames = ids.length;
@@ -216,24 +214,27 @@ public class GameScreen implements Screen {
                     core.multiplayer.infoGames(core.multiplayer.usernameStore, core.multiplayer.passwordStore,
                             idQuery);
 
-                    Timer.schedule(new Timer.Task() {
+                    gameQuery = Timer.schedule(new Timer.Task() {
 
                         @Override
                         public void run() {
                             String result = core.multiplayer.temp;
-                            check = false;
-                            if (!result.startsWith("false") && !result.equals("") && result.contains("|")) {
-                                String[] data = result.split("<br>");
-                                gameData = new ArrayList<Match>();
-                                for (int i = 0; i != data.length; i++) {
-                                    gameData.add(new Match(data[i]));
+                            if (!result.equals("")) {
+                                if (!result.startsWith("false")) {
+                                    String[] data = result.split("<br>");
+                                    gameData = new ArrayList<Match>();
+                                    for (int i = 0; i != data.length; i++) {
+                                        gameData.add(new Match(data[i]));
+                                    }
                                 }
+                                this.cancel();
                             }
                         }
-                    }, .5F);
+                    }, .5F, .5F);
+                    this.cancel();
                 }
-            }, .5F);
-        }
+            }
+        }, .5F, .5F);
     }
 
     @Override
@@ -253,7 +254,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-
+        if (idsQuery != null && idsQuery.isScheduled()) {
+            idsQuery.cancel();
+        }
+        if (gameQuery != null && gameQuery.isScheduled()) {
+            gameQuery.cancel();
+        }
     }
 
     @Override
