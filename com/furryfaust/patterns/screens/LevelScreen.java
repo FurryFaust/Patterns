@@ -9,6 +9,9 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.Core;
+import com.furryfaust.patterns.multiplayer.screens.GameScreen;
+
+import java.util.ArrayList;
 
 public class LevelScreen implements Screen {
 
@@ -26,7 +29,9 @@ public class LevelScreen implements Screen {
             signoutY, signoutWidth, signoutHeight, gamesX, gamesY,
             gamesWidth, gamesHeight, inviteX, inviteY, inviteWidth,
             inviteHeight;
-    boolean loggedIn, check;
+    public boolean loggedIn;
+    boolean check;
+    Timer.Task connection;
 
     public LevelScreen(Core core) {
         this.core = core;
@@ -83,19 +88,22 @@ public class LevelScreen implements Screen {
         Gdx.input.setInputProcessor(new GestureDetector(new InputHandler()));
         core.multiplayer.checkConnection(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
 
-        if (core.multiplayer.usernameStore != "" && core.multiplayer.passwordStore != "") {
+        if (!loggedIn && core.multiplayer.usernameStore != "" && core.multiplayer.passwordStore != "" && check == false) {
             check = true;
-            Timer.schedule(new Timer.Task() {
+            connection = Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
-                    loggedIn = core.multiplayer.temp.equals("true");
-                    if (loggedIn) {
-                        welcomeX = Gdx.graphics.getWidth() / 2 -
-                                (int) font.getBounds("Welcome back," + core.multiplayer.usernameStore).width / 2;
+                    if (core.multiplayer.temp != "") {
+                        loggedIn = core.multiplayer.temp.startsWith("true");
+                        if (loggedIn) {
+                            welcomeX = Gdx.graphics.getWidth() / 2 -
+                                    (int) font.getBounds("Welcome back," + core.multiplayer.usernameStore).width / 2;
+                        }
+                        check = false;
+                        this.cancel();
                     }
-                    check = false;
                 }
-            }, 1F);
+            }, 1F, 1F);
         }
     }
 
@@ -182,6 +190,7 @@ public class LevelScreen implements Screen {
                     loggedIn = false;
                     core.multiplayer.usernameStore = "";
                     core.multiplayer.passwordStore = "";
+                    ((GameScreen) core.gameScreen).gameData = new ArrayList<GameScreen.Match>();
                 }
                 if (x > inviteX && x < inviteX + inviteWidth && y > inviteY && y < inviteY + inviteHeight) {
                     core.setScreen(core.inviteScreen);

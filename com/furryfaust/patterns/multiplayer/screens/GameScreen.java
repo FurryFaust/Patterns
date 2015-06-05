@@ -18,7 +18,7 @@ public class GameScreen implements Screen {
     public Core core;
     int index = 1;
     int totalGames;
-    ArrayList<Match> gameData;
+    public ArrayList<Match> gameData;
     SpriteBatch batch;
     BitmapFont font;
     int lostX, lostWidth, lostHeight,
@@ -188,7 +188,9 @@ public class GameScreen implements Screen {
     public void refreshData() {
         if (!check) {
             check = true;
-            gameData = new ArrayList<Match>();
+            if (gameData == null) {
+                gameData = new ArrayList<Match>();
+            }
 
             core.multiplayer.requestGames(core.multiplayer.usernameStore, core.multiplayer.passwordStore);
             Timer.schedule(new Timer.Task() {
@@ -219,18 +221,18 @@ public class GameScreen implements Screen {
                         @Override
                         public void run() {
                             String result = core.multiplayer.temp;
-                            System.out.println(result);
                             check = false;
-                            if (!result.startsWith("false") && !result.equals("")) {
+                            if (!result.startsWith("false") && !result.equals("") && result.contains("|")) {
                                 String[] data = result.split("<br>");
+                                gameData = new ArrayList<Match>();
                                 for (int i = 0; i != data.length; i++) {
                                     gameData.add(new Match(data[i]));
                                 }
                             }
                         }
-                    }, .75F);
+                    }, .5F);
                 }
-            }, .75F);
+            }, .5F);
         }
     }
 

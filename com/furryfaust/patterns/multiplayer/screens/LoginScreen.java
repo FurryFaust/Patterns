@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.furryfaust.patterns.Core;
+import com.furryfaust.patterns.screens.LevelScreen;
 
 public class LoginScreen implements Screen {
 
@@ -130,6 +131,7 @@ public class LoginScreen implements Screen {
                         if (core.multiplayer.temp.startsWith("true")) {
                             core.multiplayer.usernameStore = tempUserStore;
                             core.multiplayer.passwordStore = tempPassStore;
+                            ((LevelScreen) core.levelScreen).loggedIn = true;
                             core.setScreen(core.levelScreen);
                         } else {
                             errorMessage = core.multiplayer.temp;

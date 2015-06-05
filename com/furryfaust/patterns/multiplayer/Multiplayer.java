@@ -10,6 +10,7 @@ public class Multiplayer {
     public final String api = "http://patterns.furryfaust.com/api/";
     public String usernameStore, passwordStore;
     public String temp;
+    public boolean isChecking;
 
     public Multiplayer(Core core) {
         this.core = core;
@@ -18,7 +19,7 @@ public class Multiplayer {
 
     public void checkConnection(String username, String password) {
         temp = "";
-
+        
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl(api + "auth.php?username=" + username + "&password="
                 + password);
