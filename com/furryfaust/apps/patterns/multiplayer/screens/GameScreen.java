@@ -201,7 +201,14 @@ public class GameScreen implements Screen {
                 @Override
                 public void run() {
                     if (core.multiplayer.temp != "") {
-                        String result = new StringBuilder(core.multiplayer.temp).reverse().toString();
+                        String result = "";
+                        String[] split = core.multiplayer.temp.split("-");
+                        for (int i = core.multiplayer.temp.split("-").length - 1; i >= 0; i--) {
+                            result += split[i] + "-";
+                        }
+                        if (result.charAt(result.length() - 1) == '-') {
+                            result = result.substring(0, result.length() - 1);
+                        }
                         String[] ids = result.split("-");
                         totalGames = ids.length;
                         int min = (index - 1) * 4;
@@ -226,10 +233,10 @@ public class GameScreen implements Screen {
                             public void run() {
                                 String result = core.multiplayer.temp;
                                 if (!result.equals("")) {
-                                    if (!result.startsWith("false")) {
-                                        String[] data = result.split("<br>");
-                                        gameData = new ArrayList<Match>();
-                                        for (int i = 0; i != data.length; i++) {
+                                    String[] data = result.split("<br>");
+                                    gameData = new ArrayList<Match>();
+                                    for (int i = 0; i != data.length; i++) {
+                                        if (!data[i].startsWith("false")) {
                                             gameData.add(new Match(data[i]));
                                         }
                                     }
